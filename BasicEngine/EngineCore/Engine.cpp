@@ -7,6 +7,7 @@
 
 #include "Window.h"
 #include "SystemManager.h"
+#include "AssetManager.h"
 
 namespace Core {
 	Engine::Engine() : isRunning(true),engineWindow(new Window()){
@@ -29,31 +30,42 @@ namespace Core {
 	}
 	
 	int Engine::Init(){
+		auto start = std::chrono::high_resolution_clock().now();
 		//Get instance of log manager
 		LogManager::GetInstance();
+
 		//Used to check init success
-		bool success = 0;
+		int success = 0;
 	#if _DEBUG
 		LogManager::Log(Core::Loglevel::DEFAULT, "Engine init");
 	#endif
 		if (!InitSDL()) {
-			LogManager::Log(Core::Loglevel::ERROR, "Could not init SDL");
+			LogManager::Log(Core::Loglevel::FATAL, "Could not init SDL");
 			success = 1;
 		}
+
 		return success;
+
+		auto end = std::chrono::high_resolution_clock().now();
+		auto durationMS = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+
+	#if _DEBUG
+		std::cout << "Engine init took " << durationMS.count() << " ms" << std::endl;
+	#endif
 	}
 
 	bool Engine::InitSDL(){
 		bool success = true;
 		if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-			LogManager::Log(Core::Loglevel::ERROR, "Failed to init SDL");
+			LogManager::Log(Core::Loglevel::FATAL, "Failed to init SDL");
 			success = false;
 		}
 		else {
 			if (!SystemManager::GetInstance().Init()) {
-				LogManager::Log(Core::Loglevel::ERROR, "Error in init system");
+				LogManager::Log(Core::Loglevel::FATAL, "Error in init system");
 			}
 		}
+
 
 		return success;
 	}
@@ -74,14 +86,12 @@ namespace Core {
 
 			Update();
 			Render();
-
-			
 		}
 	}
 
 	void Engine::Update(){
 		//Event handling
-		const auto start = std::chrono::high_resolution_clock().now();
+		//const auto start = std::chrono::high_resolution_clock().now();
 
 		//Getting all event that happened
 		SDL_Event e;
@@ -103,9 +113,9 @@ namespace Core {
 
 		SystemManager::GetInstance().Update();
 
-		const auto end = std::chrono::high_resolution_clock().now();
-		const auto durationMS = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-		std::cout << durationMS.count() << " ms" << std::endl;
+		//const auto end = std::chrono::high_resolution_clock().now();
+		//const auto durationMS = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+		//std::cout << durationMS.count() << " ms" << std::endl;
 	}
 
 	void Engine::Render() {
@@ -127,7 +137,7 @@ namespace Core {
 		//If the window failed to shutdown
 		if (!SystemManager::GetInstance().Shutdown()) {
 		#if _DEBUG
-			LogManager::Log(Core::Loglevel::ERROR, "Failed to properly shutdown the window");
+			LogManager::Log(Core::Loglevel::FATAL, "Failed to properly shutdown the window");
 		#endif
 			success = 1;
 		}

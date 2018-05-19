@@ -3,8 +3,8 @@
 
 #include "System.h"
 
-class SDL_Window;
-class SDL_Surface;
+struct SDL_Window;
+struct SDL_Surface;
 
 namespace Core {
 	class Window : public System

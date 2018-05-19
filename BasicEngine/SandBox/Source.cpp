@@ -4,7 +4,7 @@
 int main(int argc, char* argv[]) {
 	Core::Engine e;
 
-	if (e.Init()) {
+	if (e.Init() == 0) {
 		e.Run();
 	}
 
