@@ -2,27 +2,30 @@
 #define LOG_MANAGER_H
 
 #include <iostream>
+#include "Singleton.h"
 
 namespace Core {
 	enum class Loglevel : unsigned __int8 {
 		DEFAULT,
 		ERROR,
 		WARNING,
+		FATAL,
 		TOTAL
 	};
 
-	class LogManager
+	class LogManager : public Singleton<LogManager>
 	{
-		LogManager();
-		~LogManager();
+		friend Singleton;
 
-		static LogManager* m_instance;
-		static Loglevel currentLevel;
+		LogManager();
+
+		Loglevel currentLevel;
 
 	public:
+		~LogManager();
 		static void SetLevel(Loglevel l);
+		static Loglevel GetLevel();
 		static void Log(Loglevel l, const char* message);
-		static LogManager& GetInstance();
 	};
 }
 #endif // !LOG_MANAGER_H

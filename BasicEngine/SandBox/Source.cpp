@@ -1,8 +1,13 @@
+#include <Engine.h>
 #include <LogManager.h>
 
 int main(int argc, char* argv[]) {
-	Core::LogManager::Log(Core::Loglevel::DEFAULT, "Test message");
+	Core::Engine e;
 
-	getchar();
+	if (e.Init()) {
+		e.Run();
+	}
+
+	//getchar();
 	return 0;
 }
