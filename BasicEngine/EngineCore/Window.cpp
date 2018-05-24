@@ -1,5 +1,6 @@
 #include "Window.h"
 #include <SDL/SDL.h>
+#include <GL/glew.h>
 
 namespace Core {
 
@@ -13,27 +14,35 @@ namespace Core {
 
 	Window::~Window()
 	{
-		Shutdown();
 	}
 	bool Window::Init()
 	{
-		bool success = true;
+		if (!InitSDL()) {
+			return false;
+		}
 
-		window = SDL_CreateWindow(windowName, 100, 100, windowWidth, windowHeight, SDL_WINDOW_SHOWN);
+		window = SDL_CreateWindow(windowName, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
 		//If failed to create window
 		if (!window) {
-			success = false;
+			return false;
 		}
-		//if not set surface
-		else {
-			screenSurface = SDL_GetWindowSurface(window);
-		}
+		SDL_GLContext glContexxt = SDL_GL_CreateContext(window);
 
-		return success;
+		//Creating a double buffer
+		//Draw on back buffer display on front
+		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
+		//V-sync
+		SDL_GL_SetSwapInterval(0);
+
+		//if not set surface
+		screenSurface = SDL_GetWindowSurface(window);
+
+		return true;
 	}
 	void Window::Update()
 	{
-		SDL_UpdateWindowSurface(window);
+		SDL_GL_SwapWindow(window);
 	}
 	void Window::Render()
 	{
@@ -52,6 +61,24 @@ namespace Core {
 			success = false;
 		}
 
+		CloseSDL();
+
 		return success;
+	}
+
+	bool Window::InitSDL() {
+		bool success = true;
+		if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
+			success = false;
+		}
+
+		return success;
+	}
+
+	bool Window::CloseSDL()
+	{
+		SDL_Quit();
+
+		return true;
 	}
 }

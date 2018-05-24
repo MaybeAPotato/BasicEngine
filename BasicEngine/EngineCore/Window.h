@@ -28,6 +28,9 @@ namespace Core {
 
 		SDL_Surface* GetScreenSurface() { return screenSurface; }
 		SDL_Window* GetWindow() { return window; }
+
+		bool InitSDL();
+		bool CloseSDL();
 	};
 }
 

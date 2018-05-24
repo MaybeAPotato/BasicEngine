@@ -10,14 +10,14 @@ namespace Core {
 		//Is the engine running
 		bool isRunning;
 		class Window* engineWindow;
+		class Graphic* engineGraphic;
+		class Clock* engineClock;
 
 	public:
 		Engine();
 		~Engine();
 
 		int Init();
-		bool InitSDL();
-		bool CloseSDL();
 		void Run();
 		int Shutdown();
 		void Update();

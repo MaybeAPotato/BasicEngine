@@ -71,19 +71,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(SolutionDir)\Deps\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\Deps\Lib\SDL\x86;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)Deps\Lib\SDL\x86;$(SolutionDir)Deps\Lib\GL\Win32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(SolutionDir)\Deps\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\Deps\Lib\SDL\x86;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)Deps\Lib\SDL\x86;$(SolutionDir)Deps\Lib\GL\Win32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(SolutionDir)\Deps\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\Deps\Lib\SDL\x64;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)Deps\Lib\SDL\x64;$(SolutionDir)Deps\Lib\GL\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir)\Deps\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\Deps\Lib\SDL\x64;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)Deps\Lib\SDL\x64;$(SolutionDir)Deps\Lib\GL\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -93,7 +93,7 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -104,7 +104,7 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -121,7 +121,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -138,13 +138,15 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Asset.h" />
     <ClInclude Include="AssetManager.h" />
+    <ClInclude Include="Clock.h" />
     <ClInclude Include="Engine.h" />
+    <ClInclude Include="Graphic.h" />
     <ClInclude Include="LogManager.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="System.h" />
@@ -154,7 +156,9 @@
   <ItemGroup>
     <ClCompile Include="Asset.cpp" />
     <ClCompile Include="AssetManager.cpp" />
+    <ClCompile Include="Clock.cpp" />
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="Graphic.cpp" />
     <ClCompile Include="LogManager.cpp" />
     <ClCompile Include="System.cpp" />
     <ClCompile Include="SystemManager.cpp" />

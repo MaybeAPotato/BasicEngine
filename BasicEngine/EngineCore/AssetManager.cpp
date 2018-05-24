@@ -58,12 +58,18 @@ namespace Core {
 
 		return true;
 	}
-	void AssetManager::AddAsset(char * key, Asset * a)
+	void AssetManager::AddAsset(const char * key, Asset * a)
 	{
-		assets.insert(std::make_pair(key, a));
+		//assets.insert(std::make_pair(key, a));
+		//For key have asset a
+		assets[key] = a;
 	}
 	Asset * AssetManager::GetAsset(char * key)
 	{
-		return assets.find(key)->second;
+		auto it = assets.find(key);
+		if (it != assets.end()) {
+			return it->second;
+		}
+		return nullptr;
 	}
 }

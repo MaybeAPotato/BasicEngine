@@ -6,9 +6,7 @@
 namespace Core {
 	class AssetManager :public Singleton<AssetManager>
 	{
-		AssetManager();
-		std::map<char*, class Asset*>assets;
-
+		std::map<const char*, class Asset*>assets;
 	public:
 		~AssetManager();
 
@@ -17,9 +15,11 @@ namespace Core {
 		void Render();
 		bool Shutdown();
 
-		void AddAsset(char* key, Asset* a);
+		void AddAsset(const char* key, Asset* a);
 		inline Asset* GetAsset(char* key);
-		inline std::map<char*, Asset*> GetAssets() { return assets; }
+		inline std::map<const char*, Asset*> GetAssets() { return assets; }
+	protected:
+		AssetManager();
 	};
 }
 #endif // !ASSET_MANAGER_H

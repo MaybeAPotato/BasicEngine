@@ -8,6 +8,12 @@ namespace Core {
 
 	SystemManager::~SystemManager()
 	{
+		for (System* s : systems) {
+			delete s;
+			s = nullptr;
+		}
+
+		systems.clear();
 	}
 
 	bool SystemManager::Init()

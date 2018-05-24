@@ -2,35 +2,39 @@
 #include "LogManager.h"
 
 #include <SDL/SDL.h>
-#include <chrono>
 #include <Windows.h>
+#include <GL/glew.h>
 
 #include "Window.h"
 #include "SystemManager.h"
 #include "AssetManager.h"
+#include "Graphic.h"
+#include "Clock.h"
 
 namespace Core {
-	Engine::Engine() : isRunning(true),engineWindow(new Window()){
+	Engine::Engine() : isRunning(true),engineWindow(new Window()),engineGraphic(new Graphic()),engineClock(new Clock()){
 		SystemManager::GetInstance().AddSystem(*engineWindow);
+		SystemManager::GetInstance().AddSystem(*engineGraphic);
+		SystemManager::GetInstance().AddSystem(*engineClock);
 	}
 
 	Engine::~Engine(){
 	#if _DEBUG
 		LogManager::Log(Core::Loglevel::DEFAULT, "Engine shutdown");
 	#endif
-	#if _DEBUG
-		LogManager::Log(Core::Loglevel::WARNING, "Closing SDL");
-	#endif
-		CloseSDL();
+		delete engineWindow;
+		engineWindow = nullptr;
+
+		delete engineGraphic;
+		engineGraphic = nullptr;
 
 	#if _DEBUG
 		LogManager::Log(Core::Loglevel::DEFAULT, "Shutdown");
 	#endif
-		Shutdown();
 	}
 	
 	int Engine::Init(){
-		auto start = std::chrono::high_resolution_clock().now();
+		//auto start = std::chrono::high_resolution_clock().now();
 		//Get instance of log manager
 		LogManager::GetInstance();
 
@@ -39,42 +43,18 @@ namespace Core {
 	#if _DEBUG
 		LogManager::Log(Core::Loglevel::DEFAULT, "Engine init");
 	#endif
-		if (!InitSDL()) {
-			LogManager::Log(Core::Loglevel::FATAL, "Could not init SDL");
+
+		if (!SystemManager::GetInstance().Init()) {
 			success = 1;
 		}
 
-		return success;
-
-		auto end = std::chrono::high_resolution_clock().now();
-		auto durationMS = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-
-	#if _DEBUG
-		std::cout << "Engine init took " << durationMS.count() << " ms" << std::endl;
-	#endif
-	}
-
-	bool Engine::InitSDL(){
-		bool success = true;
-		if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-			LogManager::Log(Core::Loglevel::FATAL, "Failed to init SDL");
-			success = false;
-		}
-		else {
-			if (!SystemManager::GetInstance().Init()) {
-				LogManager::Log(Core::Loglevel::FATAL, "Error in init system");
-			}
-		}
-
 
 		return success;
-	}
 
-	bool Engine::CloseSDL()
-	{
-		bool success = true;
+		//auto end = std::chrono::high_resolution_clock().now();
+		//auto durationMS = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 
-		return success;
+		//std::cout << "Engine init took " << durationMS.count() << " ms" << std::endl;
 	}
 
 	void Engine::Run()
@@ -82,11 +62,13 @@ namespace Core {
 	#if _DEBUG
 		LogManager::Log(Core::Loglevel::DEFAULT, "Engine run");
 	#endif
+		//Infinite engine loop
 		while (isRunning) {
-
 			Update();
 			Render();
 		}
+
+		Shutdown();
 	}
 
 	void Engine::Update(){
@@ -96,8 +78,8 @@ namespace Core {
 		//Getting all event that happened
 		SDL_Event e;
 
-		LARGE_INTEGER t;
-		QueryPerformanceFrequency(&t);
+		//LARGE_INTEGER t;
+		//QueryPerformanceFrequency(&t);
 
 		while (SDL_PollEvent(&e) != 0) {
 			switch (e.type)
@@ -127,17 +109,16 @@ namespace Core {
 	#if _DEBUG
 		LogManager::Log(Core::Loglevel::DEFAULT, "Engine shutdown");
 	#endif
-
 		int success = 0;
 
 	#if _DEBUG
-		LogManager::Log(Core::Loglevel::DEFAULT, "Window shutdown");
+		LogManager::Log(Core::Loglevel::DEFAULT, "Systems shutdown");
 	#endif
 
 		//If the window failed to shutdown
 		if (!SystemManager::GetInstance().Shutdown()) {
 		#if _DEBUG
-			LogManager::Log(Core::Loglevel::FATAL, "Failed to properly shutdown the window");
+			LogManager::Log(Core::Loglevel::FATAL, "Failed to properly shutdown a system");
 		#endif
 			success = 1;
 		}

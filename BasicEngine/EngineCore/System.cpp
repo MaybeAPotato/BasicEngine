@@ -2,7 +2,7 @@
 
 namespace Core {
 
-	System::System(SystemType systemType) : type(systemType)
+	System::System(SystemType systemType) : type(systemType),name(SetName(systemType))
 	{
 	}
 
@@ -23,5 +23,32 @@ namespace Core {
 	bool System::Shutdown()
 	{
 		return true;
+	}
+	const char* System::SetName(SystemType type)
+	{
+		switch (type)
+		{
+		case SystemType::WINDOW:
+			return "Window";
+			break;
+		case SystemType::INPUT:
+			return "Input";
+			break;
+		case SystemType::GRAPHICS:
+			return "Graphics";
+			break;
+		case SystemType::CLOCK:
+			return "Clock";
+			break;
+		case SystemType::TOTAL:
+			return "Total";
+			break;
+		default:
+			break;
+		}
+	}
+	const char * System::GetName()
+	{
+		return name;
 	}
 }
