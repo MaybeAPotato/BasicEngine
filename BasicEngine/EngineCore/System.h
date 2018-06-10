@@ -6,6 +6,7 @@ enum class SystemType : unsigned __int8 {
 	INPUT,
 	GRAPHICS,
 	CLOCK,
+	UI,
 	TOTAL
 };
 

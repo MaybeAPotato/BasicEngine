@@ -1,6 +1,5 @@
 #include <Engine.h>
 #include <LogManager.h>
-
 int main(int argc, char* argv[]) {
 	Core::Engine e;
 
@@ -8,6 +7,6 @@ int main(int argc, char* argv[]) {
 		e.Run();
 	}
 
-	//getchar();
+	getchar();
 	return 0;
 }

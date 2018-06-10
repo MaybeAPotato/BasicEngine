@@ -27,9 +27,19 @@ namespace Core {
 		void RemoveSystem(int index) { systems.erase(systems.begin() + index); }
 		void RemoveSystem() { systems.pop_back(); }
 		inline const std::vector<System*>& GetSystems() const { return systems; }
-
 		template<class T>
-		T* GetSystem() const;
+		T * GetSystem() const
+		{
+			//System* s = std::find_if(systems.begin(), systems.end(), [T](System* m) > bool{
+			//	return dynamic_cast<T>(m) != nullptr;
+			//	})
+			for (System* s : systems) {
+				T* m = dynamic_cast<T*>(s);
+				if (m) {
+					return m;
+				}
+			}
+		}
 	protected:
 		SystemManager();
 	};

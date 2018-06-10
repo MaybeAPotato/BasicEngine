@@ -8,6 +8,13 @@
 namespace Core {
 	class Clock : public System
 	{
+		//How many frames passed
+		static uint64_t frameCounter;
+		//How many seconds passed
+		static double elapsedSeconds;
+		//Clock used to track time
+		static std::chrono::high_resolution_clock clock;
+
 	public:
 		Clock();
 		~Clock();
@@ -18,5 +25,4 @@ namespace Core {
 		bool Shutdown() override;
 	};
 }
-
 #endif // !CLOCK_H

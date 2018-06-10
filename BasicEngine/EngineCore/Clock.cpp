@@ -1,6 +1,10 @@
 #include "Clock.h"
 
 namespace Core {
+	uint64_t Clock::frameCounter = 0;
+	double Clock::elapsedSeconds = 0.0;
+	std::chrono::high_resolution_clock Clock::clock;
+
 	Clock::Clock() : System(SystemType::CLOCK)
 	{
 	}
@@ -16,11 +20,9 @@ namespace Core {
 	void Clock::Update()
 	{
 		//How many frames passed
-		static uint64_t frameCounter = 0;
+		//frameCounter = 0;
 		//How many seconds passed
-		static double elapsedSeconds = 0.0;
-		//Clock used to track time
-		static std::chrono::high_resolution_clock clock;
+		//elapsedSeconds = 0.0;
 		static auto t0 = clock.now();
 
 		//Increment the number of frames
@@ -35,7 +37,7 @@ namespace Core {
 		elapsedSeconds += deltaTime.count() * 1e-9;
 
 		//When it reaches 1 second or greaterish
-		if (elapsedSeconds > 1.0f) {
+		if (elapsedSeconds > 1.0) {
 			char buffer[500];
 			//How many frames during second
 			auto fps = frameCounter / elapsedSeconds;
@@ -44,7 +46,7 @@ namespace Core {
 			printf("%s", buffer);
 
 			frameCounter = 0;
-			elapsedSeconds - 0.0;
+			elapsedSeconds = 0.0;
 		}
 	}
 	void Clock::Render()

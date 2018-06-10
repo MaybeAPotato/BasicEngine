@@ -1,8 +1,8 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-class SDL_Window;
-class SDL_Surface;
+struct SDL_Window;
+struct SDL_Surface;
 
 namespace Core {
 	class Engine
@@ -12,6 +12,10 @@ namespace Core {
 		class Window* engineWindow;
 		class Graphic* engineGraphic;
 		class Clock* engineClock;
+		class SystemUI* engineUI;
+		class Input* engineInput;
+
+		class AssetManager* engineAssetManager;
 
 	public:
 		Engine();

@@ -48,17 +48,4 @@ namespace Core {
 		}
 		return success;
 	}
-
-	template<class T>
-	T * SystemManager::GetSystem() const
-	{
-		//System* s = std::find_if(systems.begin(), systems.end(), [T](System* m) > bool{
-		//	return dynamic_cast<T>(m) != nullptr;
-		//	})
-		for (System* s : systems) {
-			if (m = dynamic_cast<T>(s)) {
-				return m;
-			}
-		}
-	}
 }

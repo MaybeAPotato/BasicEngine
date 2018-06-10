@@ -20,6 +20,12 @@ namespace Core{
 			return false;
 		}
 
+		
+
+		return true;
+	}
+	bool Graphic::ShutdownOpenGL()
+	{
 		return true;
 	}
 	bool Graphic::Init()
@@ -49,11 +55,11 @@ namespace Core{
 		//TODO: remove this by adding a mesh
 		//open pipe method - terrible performance
 		//Starts drawing
-		glBegin(GL_TRIANGLES);
+		/*glBegin(GL_TRIANGLES);
 		glColor3f(1.0f, 0.0, 0.0f);
 		glVertex2f(0, 0);
 		glVertex2f(0, 500);
-		glVertex2f(500, 500);
+		glVertex2f(500, 500);*/
 		//Ends drawing
 		glEnd();
 	}

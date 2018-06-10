@@ -15,7 +15,7 @@ namespace Core {
 	{
 		auto itr = assets.begin();
 
-		while (itr->second) {
+		while (itr != assets.end()) {
 			if (!assets.at(itr->first)->Init()) {
 				return false;
 			}
@@ -29,7 +29,7 @@ namespace Core {
 	{
 		auto itr = assets.begin();
 
-		while(itr->second) {
+		while(itr != assets.end()) {
 			assets.at(itr->first)->Update();
 			itr++;
 		}
@@ -39,7 +39,7 @@ namespace Core {
 	{
 		auto itr = assets.begin();
 
-		while (itr->second) {
+		while (itr != assets.end()) {
 			assets.at(itr->first)->Render();
 			itr++;
 		}
@@ -49,7 +49,7 @@ namespace Core {
 	{
 		auto itr = assets.begin();
 
-		while (itr->second) {
+		while (itr != assets.end()) {
 			if (!assets.at(itr->first)->Shutdown()) {
 				return false;
 			}
@@ -64,7 +64,12 @@ namespace Core {
 		//For key have asset a
 		assets[key] = a;
 	}
-	Asset * AssetManager::GetAsset(char * key)
+	void AssetManager::AddAsseti(const char * key, Asset * a)
+	{
+		a->Init();
+		assets[key] = a;
+	}
+	Asset * AssetManager::GetAsset(const char * key)
 	{
 		auto it = assets.find(key);
 		if (it != assets.end()) {

@@ -33,7 +33,7 @@ namespace Core {
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
 		//V-sync
-		SDL_GL_SetSwapInterval(0);
+		SDL_GL_SetSwapInterval(1);
 
 		//if not set surface
 		screenSurface = SDL_GetWindowSurface(window);
