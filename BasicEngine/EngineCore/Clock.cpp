@@ -56,4 +56,14 @@ namespace Core {
 	{
 		return true;
 	}
+	float Clock::GetDeltatime()
+	{
+		auto t = clock.now();
+
+		auto t1 = clock.now();
+
+		auto deltatime = t1 - t;
+
+		return deltatime.count();
+	}
 }

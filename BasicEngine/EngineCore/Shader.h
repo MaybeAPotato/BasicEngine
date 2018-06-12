@@ -50,7 +50,8 @@ namespace Core {
 		void SetInt(const char* name, int value);
 		void SetFloat(const char* name, float value);
 		
-		//Vec
+		//Vector manipulation
+
 		void SetVec2(const char* name, float x, float y);
 		void SetVec2(const char* name, glm::vec2 vec);
 		void SetVec3(const char* name, float x, float y, float z);
@@ -58,7 +59,9 @@ namespace Core {
 		void SetVec4(const char* name, float x, float y, float z, float w);
 		void SetVec4(const char* name, glm::vec4 vec);
 
-		//Matrix
+		//Matrix manipulation
+
+		void SetMat3(const char* name, glm::mat3 newMat);
 		void SetMat4(const char* name, glm::mat4 newMat);
 
 

@@ -35,6 +35,9 @@ namespace Core {
 		//V-sync
 		SDL_GL_SetSwapInterval(1);
 
+		//Capture mouse
+		//SDL_CaptureMouse(SDL_TRUE);
+
 		//if not set surface
 		screenSurface = SDL_GetWindowSurface(window);
 
@@ -64,6 +67,16 @@ namespace Core {
 		CloseSDL();
 
 		return success;
+	}
+
+	float Window::GetWidth()
+	{
+		return GetScreenSurface()->w;
+	}
+
+	float Window::GetHeight()
+	{
+		return GetScreenSurface()->h;
 	}
 
 	bool Window::InitSDL() {

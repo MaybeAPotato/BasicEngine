@@ -125,8 +125,13 @@ namespace Core {
 		glUniform4fv(glGetUniformLocation(ID, name), 1, glm::value_ptr(glm::vec4(vec)));
 	}
 
+	void Shader::SetMat3(const char * name, glm::mat3 newMat)
+	{
+		glUniformMatrix3fv(glGetUniformLocation(ID, name), 1, GL_FALSE, glm::value_ptr(newMat));
+	}
+
 	void Shader::SetMat4(const char * name, glm::mat4 newMat)
 	{
-		glUniformMatrix4fv(glGetUniformLocation(ID, name), 1, GL_FALSE, &newMat[0][0]);
+		glUniformMatrix4fv(glGetUniformLocation(ID, name), 1, GL_FALSE, glm::value_ptr(newMat));
 	}
 }

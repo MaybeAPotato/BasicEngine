@@ -8,9 +8,12 @@
 #include "AssetManager.h"
 #include "Asset.h"
 #include "Shader.h"
-#include "Vertex.h"
 #include "Mesh.h"
 #include "Image.h"
+
+//Component
+#include "Vertex.h"
+#include "Camera.h"
 
 //System
 #include "SystemManager.h"
@@ -20,6 +23,8 @@
 #include "SystemUI.h"
 #include "Input.h"
 #include "Camera.h"
+
+#include "GameObject.h"
 
 //For glm
 #include <glm/glm.hpp>
@@ -39,9 +44,11 @@ const char* vertexShader =
 "uniform mat4 model;\n"
 "uniform mat4 view;\n"
 "uniform mat4 projection;\n"
+//"uniform mat4 transform;\n"
 
 "void main(){\n"
-"gl_Position = vec4(aPos,1.0);\n"//Saved variable from openGL
+"gl_Position = projection * view * model * vec4(aPos,1.0);\n"//Saved variable from openGL
+//"gl_Position = transform * vec4(aPos,1.0);\n"
 "TexCoord = aTexCoord;\n"
 "}\n\0";
 
@@ -58,58 +65,46 @@ const char* fragmentShader =
 "}\n\0";
 
 const char* meshVertices =
-"v -1.0 -1.0 1.0\n"
-"v -1.0 1.0 1.0\n"
-"v -1.0 -1.0 -1.0\n"
-"v -1.0 1.0 -1.0\n"
-"v 1.0 -1.0 1.0\n"
-"v 1.0 1.0 1.0\n"
-"v 1.0 -1.0 -1.0\n"
-"v 1.0 1.0 -1.0\n"
+"v 0.5f, 0.5f, 0.0f\n"
+"v 0.5f, -0.5f, 0.0f\n"
+"v -0.5, -0.5f, 0.0f\n"
+"v -0.5f, 0.5f, 0.0f\n"
+"i 0, 1, 3\n"
+"i 1, 2, 3\n"
 ;
 
-float vertices[] = {
-	0.5f, 0.5f, 0.0f,
-	0.5f, -0.5f,0.0f,
-	-0.5, -0.5f,0.0f,
-	-0.5f,0.5f,0.0f
+std::vector<float>vertices = { 0.5f, 0.5f, 0.0f,
+0.5f, -0.5f,0.0f,
+-0.5, -0.5f,0.0f,
+-0.5f,0.5f,0.0f };
+
+std::vector<unsigned int>indices = { 0, 1, 3,
+1,2,3 };
+
+float textCoords[] = {
+	0.0f,0.0f,
+	1.0f,0.0f,
+	0.0f,1.0f,
+	1.0f,1.0f
 };
 
-unsigned int indices[] = {
-	0, 1, 3,
-	1,2,3
-};
-
-unsigned int VAO, VBO, EBO;
-
-glm::mat4 model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-glm::mat4 view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
 namespace Core {
+	Core::GameObject go;
+
+	Core::Camera camera;
+
+	Core::Mesh mesh(vertices, indices);
+	Core::Image image("container.jpg");
+	Core::Shader shader(*vertexShader, *fragmentShader);
+	Core::Vertex vertex(mesh, shader);
+
 	Engine::Engine() : isRunning(true),engineWindow(new Window()),engineGraphic(new Graphic()),engineClock(new Clock()),engineUI(new SystemUI()),engineInput(new Input()){
 		SystemManager::GetInstance().AddSystem(*engineWindow);
 		SystemManager::GetInstance().AddSystem(*engineClock);
 		SystemManager::GetInstance().AddSystem(*engineInput);
 		SystemManager::GetInstance().AddSystem(*engineGraphic);
 		SystemManager::GetInstance().AddSystem(*engineUI);
-
-		Core::Mesh* mesh = new Mesh(meshVertices);
-		Core::Image* image = new Image("container.jpg");
-		//Core::Vertex* vert = new Vertex(1, 1, 1);
-		/*vert->BindVAO(0);
-		vert->BindVBO(0);
-		vert->BufferData(vertices, Core::DataType::STATIC);
-		vert->VertexAttributePointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
-		vert->BindVBO(-1);
-		vert->BindEBO(0);
-		vert->BufferElement(indices, Core::DataType::STATIC);
-		vert->BindVAO(-1);*/
-
-		Core::Shader* shader =  new Shader(*vertexShader, *fragmentShader);
-		AssetManager::GetInstance().AddAsset("Shader",shader);
-		AssetManager::GetInstance().AddAsset("Image", image);
-
 	}
 
 	Engine::~Engine(){
@@ -131,9 +126,9 @@ namespace Core {
 		delete engineInput;
 		engineInput = nullptr;
 
-		glDeleteVertexArrays(1,&VAO);
+		/*glDeleteVertexArrays(1,&VAO);
 		glDeleteBuffers(1,&VBO);
-		glDeleteBuffers(1, &EBO);
+		glDeleteBuffers(1, &EBO);*/
 
 		#if _DEBUG
 		LogManager::Log(Core::Loglevel::DEFAULT, "Shutdown");
@@ -165,39 +160,17 @@ namespace Core {
 			success = 1;
 		}
 
-		Shader* s = dynamic_cast<Shader*>(AssetManager::GetInstance().GetAsset("Shader"));
+		camera.Init();
 
-		//Use shader program
-		s->Use();
+		mesh.Init();
+		shader.Init();
+		image.Init();
+		vertex.Init();
 
-		//VAO,VBO
-		glGenVertexArrays(1, &VAO);
-		glBindVertexArray(VAO);
+		go.AddComponent(camera);
+		go.AddComponent(vertex);
 
-		glGenBuffers(1, &VBO);
-		glBindBuffer(GL_ARRAY_BUFFER,VBO);
-
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-		//Position
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-			//GLenum
-			//GLboolean
-		glEnableVertexAttribArray(0);
-
-		//Texture coordinate 
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(1);
-
-		glBindBuffer(GL_ARRAY_BUFFER,0);
-
-		glGenBuffers(1, &EBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-		glBindVertexArray(0);
-
-		glUniform1i(glGetUniformLocation(s->GetShaderProgramID(), "texture1"), 0);
+		glUniform1i(glGetUniformLocation(shader.GetShaderProgramID(), "texture1"), 0);
 
 		//auto end = std::chrono::high_resolution_clock().now();
 		//auto durationMS = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
@@ -234,35 +207,66 @@ namespace Core {
 
 		SystemManager::GetInstance().Update();
 
-		/*
+
+		go.Update();
+
+		//Keyboard input
 		//Forward
 		if (engineInput->IsKeyDown(SDLK_w)) {
-			LogManager::GetInstance().Log(Loglevel::DEFAULT, "Forward");
-			engineCamera->Keyboard(CameraMovement::FORWARD,0.16f);
+			camera.Keyboard(CameraMovement::FORWARD,0.16f);
 		}
 		//Backward
 		if (engineInput->IsKeyDown(SDLK_s)) {
-			LogManager::GetInstance().Log(Loglevel::DEFAULT, "Backward");
-			engineCamera->Keyboard(CameraMovement::BACKWARD, 0.16f);
+			camera.Keyboard(CameraMovement::BACKWARD, 0.16f);
 		}
 		//Right
 		if (engineInput->IsKeyDown(SDLK_d)) {
-			LogManager::GetInstance().Log(Loglevel::DEFAULT, "Right");
-			engineCamera->Keyboard(CameraMovement::RIGHT, 0.16f);
+			camera.Keyboard(CameraMovement::RIGHT, 0.16f);
 		}
 		//Left
 		if (engineInput->IsKeyDown(SDLK_a)) {
-			LogManager::GetInstance().Log(Loglevel::DEFAULT, "Left");
-			engineCamera->Keyboard(CameraMovement::LEFT, 0.16f);
-		}*/
+			camera.Keyboard(CameraMovement::LEFT, 0.16f);
+		}
 
-		/*Shader* s = dynamic_cast<Shader*>(AssetManager::GetInstance().GetAsset("Shader"));
-		int modelMat = glGetUniformLocation(s->GetShaderProgramID(), "model");
-		glUniformMatrix4fv(modelMat, 1, GL_FALSE, glm::value_ptr(model));
-		int viewMat = glGetUniformLocation(s->GetShaderProgramID(),"view");
-		glUniformMatrix4fv(viewMat, 1, GL_FALSE, glm::value_ptr(engineCamera->GetViewMatrix()));
-		int projMat = glGetUniformLocation(s->GetShaderProgramID(), "projection");
-		glUniformMatrix4fv(projMat, 1, GL_FALSE, glm::value_ptr(projection));*/
+		//Camera
+		if (engineInput->IsKeyDown(SDLK_LEFT)) {
+			camera.MouseMovement(-5, 0, true);
+		}
+		if (engineInput->IsKeyDown(SDLK_RIGHT)) {
+			camera.MouseMovement(5, 0, true);
+		}
+		if (engineInput->IsKeyDown(SDLK_UP)) {
+			camera.MouseMovement(0, 5, true);
+		}
+		if (engineInput->IsKeyDown(SDLK_DOWN)) {
+			camera.MouseMovement(0, -5, true);
+		}
+		
+
+		//Mouse input
+		//if (engineInput->GetMouseMotionX() > 0 || engineInput->GetMouseMotionY() > 0) {
+		//	camera.MouseMovement(engineInput->GetMouseMotionX(), engineInput->GetMouseMotionY(),true);
+		//}
+
+		//Uniform changes
+		glm::mat4 model, view, projection;
+
+		model = glm::translate(model, -camera.GetPosition());
+		model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		view = camera.GetViewMatrix();
+		projection = glm::perspective(glm::radians(camera.GetFov()), 800.0f / 600.0f, 0.1f, 100.0f);
+
+		//int modelLoc = glGetUniformLocation(shader.GetShaderProgramID(), "model");
+		//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		shader.SetMat4("model", model);
+
+		//int viewLoc = glGetUniformLocation(shader.GetShaderProgramID(), "view");
+		//glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+		shader.SetMat4("view", view);
+
+		//int projLoc = glGetUniformLocation(shader.GetShaderProgramID(), "projection");
+		//glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+		shader.SetMat4("projection", projection);
 
 		if (engineInput->QuitRequested()) {
 			isRunning = false;
@@ -277,23 +281,24 @@ namespace Core {
 
 	void Engine::Render() {
 		SystemManager::GetInstance().Render();
+		go.Render();
 		AssetManager::GetInstance().Render();
 
-		static_cast<Shader*>(AssetManager::GetInstance().GetAsset("Shader"))->Use();
-		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		//static_cast<Shader*>(AssetManager::GetInstance().GetAsset("Shader"))->Use();
+		//glBindVertexArray(VAO);
+		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	}
 
 	int Engine::Shutdown()
 	{
-	#if _DEBUG
+		#if _DEBUG
 		LogManager::Log(Core::Loglevel::DEFAULT, "Engine shutdown");
-	#endif
+		#endif
 		int success = 0;
 
-	#if _DEBUG
+		#if _DEBUG
 		LogManager::Log(Core::Loglevel::DEFAULT, "Systems shutdown");
-	#endif
+		#endif
 		//If the window failed to shutdown
 		if (!SystemManager::GetInstance().Shutdown()) {
 		#if _DEBUG
@@ -309,7 +314,7 @@ namespace Core {
 			success = 1;
 		}
 
-
+		go.Shutdown();
 
 		return success;
 	}

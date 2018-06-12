@@ -20,8 +20,6 @@ namespace Core{
 			return false;
 		}
 
-		
-
 		return true;
 	}
 	bool Graphic::ShutdownOpenGL()
@@ -50,7 +48,7 @@ namespace Core{
 		//Buffers that hold informtaion for colour
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glEnableClientState(GL_COLOR_ARRAY);
+		//glEnableClientState(GL_COLOR_ARRAY);
 
 		//TODO: remove this by adding a mesh
 		//open pipe method - terrible performance

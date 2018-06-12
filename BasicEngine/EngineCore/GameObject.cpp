@@ -3,7 +3,9 @@
 
 namespace Core {
 
-	GameObject::GameObject()
+
+
+	GameObject::GameObject() : position(0.0f,0.0f,0.0f,1.0f),scale(1.0f,1.0f,1.0f,1.0f),rotation(0.0f,0.0f,0.0f,0.0f),transform()
 	{
 	}
 
@@ -13,6 +15,7 @@ namespace Core {
 	}
 	void GameObject::AddComponent(Component & c)
 	{
+		c.SetParent(this);
 		components.push_back(&c);
 	}
 	void GameObject::AddChild(GameObject & g)
@@ -64,5 +67,29 @@ namespace Core {
 			}
 		}
 		return true;
+	}
+	void GameObject::Translate(float x, float y, float z)
+	{
+		transform = glm::translate(transform, glm::vec3(x, y, z));
+	}
+	void GameObject::Translate(glm::vec3 vec)
+	{
+		transform = glm::translate(transform, vec);
+	}
+	void GameObject::Scale(float x, float y, float z)
+	{
+		transform = glm::scale(transform, glm::vec3(x, y, z));
+	}
+	void GameObject::Scale(glm::vec3 scale)
+	{
+		transform = glm::scale(transform, scale);
+	}
+	void GameObject::Rotate(float angle, float x, float y, float z)
+	{
+		transform = glm::rotate(transform, angle, glm::vec3(x, y, z));
+	}
+	void GameObject::Rotate(float angle, glm::vec3 vec)
+	{
+		transform = glm::rotate(transform, angle, vec);
 	}
 }

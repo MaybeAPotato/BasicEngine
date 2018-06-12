@@ -9,5 +9,7 @@ namespace Core {
 
 	Component::~Component()
 	{
+		delete parent;
+		parent = nullptr;
 	}
 }

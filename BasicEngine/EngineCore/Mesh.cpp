@@ -56,21 +56,43 @@ namespace Core {
 				}
 
 				break;
+			//Indices(guide points)
+			case('i'):
+				while (numStream.size() > 0) {
+					pos = numStream.find(" ");
+					pos = pos == std::string::npos ? numStream.size() - 1 : pos;
+					std::string token = numStream.substr(0, pos);
+					indices.push_back(std::stof(token.c_str()));
+					numStream.erase(0, pos);
+				}
+				break;
 			default:
 				break;
 			}
 		}
 	}
 
-	Mesh::Mesh(float * v, int * i)
+	Mesh::Mesh(float * v, int vSize, unsigned int * i, int iSize)
 	{
-		for (int f = 0; f < sizeof(v); f++) {
+		vertices.reserve(vSize);
+		indices.reserve(iSize);
+		for (int f = 0; f < vSize; f++) {
 			vertices.insert(vertices.begin() + f, v[f]);
 		}
-		for (int f = 0; f < sizeof(i); f++) {
+		for (int f = 0; f < iSize; f++) {
 			indices.insert(indices.begin() + f, i[f]);
 		}
+
 	}
+
+	Mesh::Mesh(const std::vector<float>& v, const std::vector<unsigned int>& i)
+	{
+		vertices.reserve(v.size());
+		vertices = v;
+		indices.reserve(i.size());
+		indices = i;
+	}
+
 
 
 	Mesh::~Mesh()

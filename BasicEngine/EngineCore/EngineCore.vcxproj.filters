@@ -28,6 +28,12 @@
     <Filter Include="Source Files\System">
       <UniqueIdentifier>{8dfa773c-f279-40ef-a873-ae297593cc83}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Component">
+      <UniqueIdentifier>{4695f25f-bd9f-4ca6-bbd2-5176603d1668}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Component">
+      <UniqueIdentifier>{7ca88a12-d089-403a-a0cd-b9b6d0d872ee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LogManager.h">
@@ -72,9 +78,6 @@
     <ClInclude Include="Asset.h">
       <Filter>Header Files\Asset</Filter>
     </ClInclude>
-    <ClInclude Include="Vertex.h">
-      <Filter>Header Files\Asset</Filter>
-    </ClInclude>
     <ClInclude Include="Mesh.h">
       <Filter>Header Files\Asset</Filter>
     </ClInclude>
@@ -96,9 +99,6 @@
     <ClInclude Include="SystemManager.h">
       <Filter>Header Files\System</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Input.h">
       <Filter>Header Files\System</Filter>
     </ClInclude>
@@ -111,8 +111,14 @@
     <ClInclude Include="Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>Header Files\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files\Component</Filter>
+    </ClInclude>
     <ClInclude Include="Component.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Component</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -152,9 +158,6 @@
     <ClCompile Include="Shader.cpp">
       <Filter>Source Files\Asset</Filter>
     </ClCompile>
-    <ClCompile Include="Vertex.cpp">
-      <Filter>Source Files\Asset</Filter>
-    </ClCompile>
     <ClCompile Include="Clock.cpp">
       <Filter>Source Files\System</Filter>
     </ClCompile>
@@ -166,9 +169,6 @@
     </ClCompile>
     <ClCompile Include="SystemManager.cpp">
       <Filter>Source Files\System</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Input.cpp">
       <Filter>Source Files\System</Filter>
@@ -182,8 +182,14 @@
     <ClCompile Include="Player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Vertex.cpp">
+      <Filter>Source Files\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files\Component</Filter>
+    </ClCompile>
     <ClCompile Include="Component.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Component</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

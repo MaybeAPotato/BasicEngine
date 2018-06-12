@@ -1,6 +1,8 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+#include "Component.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -15,7 +17,7 @@ namespace Core {
 		TOTAL
 	};
 
-	class Camera
+	class Camera : public Component
 	{
 		//Default values
 		const float YAW = -90.0f;
@@ -38,17 +40,25 @@ namespace Core {
 		float MouseSensitivity;
 		float FOV;
 
-		void Update();
 
 	public:
 		Camera();
+		~Camera();
 		Camera(glm::vec3 pos,glm::vec3 forward,glm::vec3 up,glm::vec3 right,glm::vec3 worldup,float yaw,float pitch,float movespeed,float sensitivity,float fov);
 		glm::mat4 GetViewMatrix() { return glm::lookAt(Position, Position + Forward, Up); /*position,forward pointing forward(-Z axis),up*/}
 		void Keyboard(CameraMovement direction, float deltaTime);
 		void MouseMovement(float xoffset, float yoffset, bool constrainPitch = true);
 		void MouseScroll(float offset);
 
-		~Camera();
+		bool Init() override;
+		void Update() override;
+		void Render() override;
+		bool Shutdown() override;
+
+		//Getters
+		glm::vec3 GetPosition() { return Position; }
+		float GetFov() { return FOV; }
+
 	};
 
 }

@@ -4,12 +4,14 @@
 
 #include <GL/glew.h>
 
+#include "GameObject.h"
+
 namespace Core {
 	Vertex::Vertex()
 	{
 	}
 
-	Vertex::Vertex(Mesh & m, Shader & s)
+	Vertex::Vertex(Mesh & m, Shader & s) : mesh(&m),shader(&s)
 	{
 	}
 
@@ -32,15 +34,45 @@ namespace Core {
 
 	bool Vertex::Init()
 	{
+		glGenVertexArrays(1, &VAO);
+		glBindVertexArray(VAO);
+
+		glGenBuffers(1, &VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+		glBufferData(GL_ARRAY_BUFFER, sizeof(mesh->GetVertices()[0]) * mesh->GetVertices().size(), mesh->GetVertices().data(), GL_STATIC_DRAW);
+
+		//Position
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		//GLenum
+		//GLboolean
+		glEnableVertexAttribArray(0);
+
+		//Texture coordinate 
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(1);
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glGenBuffers(1, &EBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(mesh->GetIndices()[0]) * mesh->GetIndices().size(), mesh->GetIndices().data(), GL_STATIC_DRAW);
+
+		glBindVertexArray(0);
+
 		return true;
 	}
 
 	void Vertex::Update()
 	{
+		//shader->SetMat4("transform", parent->GetTransform());
 	}
 
 	void Vertex::Render()
 	{
+		shader->Use();
+		glBindVertexArray(VAO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	}
 
 	bool Vertex::Shutdown()

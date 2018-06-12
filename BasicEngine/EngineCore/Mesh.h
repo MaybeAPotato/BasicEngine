@@ -11,19 +11,21 @@ namespace Core {
 		std::vector<float> vertNormals;
 		std::vector<float> vertFaces;
 		std::vector<float> textCoords;
-		std::vector<int> indices;
+		std::vector<unsigned int> indices;
 
 
 	public:
 		//A large file of data
 		Mesh(const char* data);
 		//A series of vertices and indices
-		Mesh(float* v, int* i);
+		//Mesh(float* v, unsigned int* i);
+		Mesh(float* v, int vSize, unsigned int* i, int iSize);
+		Mesh(const std::vector<float>& v, const std::vector<unsigned int>& i);
 		std::vector<float>& GetVertices() { return vertices; }
 		std::vector<float>& GetVertNormals() { return vertNormals; }
 		std::vector<float>& GetVertFaces() { return vertFaces; }
 		std::vector<float>& GetTextCoords() { return textCoords; }
-		std::vector<int>& GetIndices() { return indices; }
+		std::vector<unsigned int>& GetIndices() { return indices; }
 
 		~Mesh();
 	};

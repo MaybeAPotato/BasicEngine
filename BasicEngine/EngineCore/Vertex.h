@@ -15,6 +15,9 @@ namespace Core {
 	//Vertex array object,vertex buffer objects, and element buffer object
 	class Vertex : public Component
 	{
+		class Mesh* mesh;
+		class Shader* shader;
+
 		//Vertex array object
 		unsigned int VAO;
 		//std::vector<unsigned int>VAO;
@@ -39,6 +42,9 @@ namespace Core {
 		void Update() override;
 		void Render() override;
 		bool Shutdown() override;
+
+		Shader* GetShader() { return shader; }
+		Mesh* GetMesh() { return mesh; }
 
 		//Attempt at vectors
 		/*

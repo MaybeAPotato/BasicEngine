@@ -1,12 +1,16 @@
 #include "Camera.h"
 
 namespace Core {
-	Camera::Camera()
+	Camera::Camera() : Position(0.0f,0.0f,0.0f), Forward(0.0f,0.0f,-1.0f), Up(0.0f,1.0f,0.0f), Right(1.0f,0.0f,0.0f), WorldUp(0.0f,1.0f,0.0f), Yaw(YAW), Pitch(PITCH), MovementSpeed(1.0f), MouseSensitivity(MOUSE_SENSITIVITY), FOV(FIELD_OF_VIEW)
 	{
 	}
 
-	Camera::Camera(glm::vec3 pos, glm::vec3 forward, glm::vec3 up, glm::vec3 right, glm::vec3 worldup, float yaw, float pitch, float movespeed, float sensitivity, float fov) : Position(pos),Forward(forward),Up(up),Right(right),WorldUp(worldup),Yaw(yaw),Pitch(pitch), MouseSensitivity(sensitivity),FOV(fov)
+	Camera::Camera(glm::vec3 pos, glm::vec3 forward, glm::vec3 up, glm::vec3 right, glm::vec3 worldup, float yaw, float pitch, float movespeed, float sensitivity, float fov) : Position(pos),Forward(forward),Up(up),Right(right),WorldUp(worldup),Yaw(yaw),Pitch(pitch), MovementSpeed(movespeed),MouseSensitivity(sensitivity),FOV(fov)
 	{
+	}
+	bool Camera::Init()
+	{
+		return true;
 	}
 	void Camera::Update()
 	{
@@ -19,6 +23,15 @@ namespace Core {
 		Forward = glm::normalize(Forward);
 		Right = glm::normalize(glm::cross(Forward, WorldUp));
 		Up = glm::normalize(glm::cross(Right, Forward));
+	}
+
+	void Camera::Render()
+	{
+	}
+
+	bool Camera::Shutdown()
+	{
+		return true;
 	}
 
 	void Camera::Keyboard(CameraMovement direction, float deltaTime)
@@ -42,7 +55,7 @@ namespace Core {
 			break;
 		}
 
-		Update();
+		//Update();
 	}
 
 	void Camera::MouseMovement(float xoffset, float yoffset, bool constrainPitch)
@@ -62,7 +75,7 @@ namespace Core {
 			}
 		}
 
-		Update();
+		//Update();
 	}
 
 	void Camera::MouseScroll(float offset)
@@ -75,7 +88,7 @@ namespace Core {
 		if (FOV >= 45.0f)
 			FOV = 45.0f;
 
-		Update();
+		//Update();
 	}
 
 

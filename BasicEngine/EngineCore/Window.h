@@ -28,6 +28,8 @@ namespace Core {
 
 		SDL_Surface* GetScreenSurface() { return screenSurface; }
 		SDL_Window* GetWindow() { return window; }
+		float GetWidth();
+		float GetHeight();
 
 		bool InitSDL();
 		bool CloseSDL();

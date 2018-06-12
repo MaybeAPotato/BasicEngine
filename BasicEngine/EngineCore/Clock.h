@@ -23,6 +23,7 @@ namespace Core {
 		void Update() override;
 		void Render() override;
 		bool Shutdown() override;
+		float GetDeltatime();
 	};
 }
 #endif // !CLOCK_H

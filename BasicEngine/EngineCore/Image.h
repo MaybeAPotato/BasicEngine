@@ -15,6 +15,8 @@ namespace Core {
 		Image(const char* filepath);
 		~Image();
 
+		void Use();
+
 		bool Init() override;
 		void Update() override;
 		void Render() override;

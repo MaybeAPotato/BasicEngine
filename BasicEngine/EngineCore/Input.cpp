@@ -5,6 +5,8 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl_gl3.h"
 
+#include <iostream>
+
 namespace Core {
 	Input::Input() : System(SystemType::INPUT), requestedQuit(false)
 	{
@@ -33,8 +35,11 @@ namespace Core {
 				keys[e.key.keysym.sym] = true;
 				break;
 			//For mouse movement
-			//case(SDL_MOUSEMOTION):
-			//	break;
+			case(SDL_MOUSEMOTION):
+				mouseMotionX = e.motion.xrel;
+				mouseMotionY = e.motion.yrel;
+				break;
+			//Is key up
 			case(SDL_KEYUP):
 				keys[e.key.keysym.sym] = false;
 				break;

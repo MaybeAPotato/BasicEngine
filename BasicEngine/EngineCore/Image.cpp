@@ -16,6 +16,10 @@ namespace Core {
 	Image::~Image()
 	{
 	}
+	void Image::Use()
+	{
+		glBindTexture(GL_TEXTURE_2D, textureID);
+	}
 	bool Image::Init()
 	{
 		unsigned char *data = stbi_load(filepath, &width, &height, &nrChannels, 0);
