@@ -21,6 +21,9 @@ namespace Core {
 	}
 	void Input::Update() {
 		oldkeys = keys;
+		
+		mouseMotionX = 0;
+		mouseMotionY = 0;
 
 		SDL_Event e;
 

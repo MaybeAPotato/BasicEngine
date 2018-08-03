@@ -25,15 +25,29 @@ namespace Core {
 		GameObject();
 		virtual ~GameObject();
 
-		void AddComponent(Component& c);
-		void AddChild(GameObject& g);
-		GameObject* GetChildren() { return children[0]; }
-		Component* GetComponent() { return components[0]; }
-
 		virtual bool Init();
 		virtual void Update();
 		virtual void Render();
 		virtual bool Shutdown();
+
+		void AddComponent(Component& c);
+		void AddChild(GameObject& g);
+		void RemoveComponent(Component& c);
+		void RemoveChild(GameObject& g);
+		void RemoveComponent(int index);
+		void RemoveChild(int index);
+		GameObject* GetChildren() { return children[0]; }
+		Component* GetComponent() { return components[0]; }
+
+		template<class T>
+		GameObject* GetChildren() {
+			for (GameObject* g : children) {
+				if (dynamic_cast<T*>(g)) {
+					return g;
+				}
+			}
+			return nullptr;
+		}
 
 		template<class T>
 		Component* GetComponent() {
@@ -45,13 +59,31 @@ namespace Core {
 			return nullptr;
 		}
 
+		template<class T>
+		void RemoveComponent() {
+			for (auto itr = components.begin(); itr != components.end(); itr++) {
+				if (dynamic_cast<T*>(*itr)) {
+					components.erase(itr);
+				}
+			}
+		}
+
+		template<class T>
+		void RemoveChild() {
+			for (auto itr = children.begin(); itr != components.end(); itr++) {
+				if (dynamic_cast<T*>(*itr)) {
+					children.erase(itr);
+				}
+			}
+		}
+
 		//Translate object
 		void Translate(float x, float y, float z);
 		void Translate(glm::vec3 vec);
 
 		//Scale object
 		void Scale(float x, float y, float z);
-		void Scale(glm::vec3 scale);
+		void Scale(glm::vec3 vec);
 
 		//Rotate object
 		void Rotate(float angle, float x, float y, float z);

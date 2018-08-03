@@ -20,7 +20,7 @@ namespace Core {
 		forward.y = sin(glm::radians(Pitch));
 		forward.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
 
-		Forward = glm::normalize(Forward);
+		Forward = glm::normalize(forward);
 		Right = glm::normalize(glm::cross(Forward, WorldUp));
 		Up = glm::normalize(glm::cross(Right, Forward));
 	}
@@ -63,8 +63,8 @@ namespace Core {
 		xoffset *= MouseSensitivity;
 		yoffset *= MouseSensitivity;
 
-		Yaw += xoffset;
-		Pitch += yoffset;
+		Yaw += xoffset * (isYawInvert ? -1 : 1);
+		Pitch += yoffset * (isPitchInvert ? -1 : 1);
 
 		if (constrainPitch) {
 			if (Pitch > 89.0f) {

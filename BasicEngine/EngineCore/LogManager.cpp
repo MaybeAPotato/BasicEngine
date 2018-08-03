@@ -26,7 +26,7 @@ namespace Core {
 	{
 		//If within log level, print message
 		if (l <= LogManager::GetInstance().currentLevel) {
-			printf("%s\n",message);
+			std::cout << message << std::endl;
 		}
 	}
 }

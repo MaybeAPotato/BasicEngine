@@ -37,7 +37,6 @@ namespace Core {
 
 		~Vertex();
 
-
 		bool Init() override;
 		void Update() override;
 		void Render() override;

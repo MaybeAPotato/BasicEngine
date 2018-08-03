@@ -90,9 +90,10 @@ float textCoords[] = {
 
 
 namespace Core {
-	Core::GameObject go;
-
 	Core::Camera camera;
+	Core::Camera camera2;
+
+	Core::GameObject go;
 
 	Core::Mesh mesh(vertices, indices);
 	Core::Image image("container.jpg");
@@ -160,8 +161,6 @@ namespace Core {
 			success = 1;
 		}
 
-		camera.Init();
-
 		mesh.Init();
 		shader.Init();
 		image.Init();
@@ -207,65 +206,76 @@ namespace Core {
 
 		SystemManager::GetInstance().Update();
 
-
-		go.Update();
+		Camera* c = static_cast<Camera*>(go.GetComponent<Camera>());
 
 		//Keyboard input
 		//Forward
 		if (engineInput->IsKeyDown(SDLK_w)) {
-			camera.Keyboard(CameraMovement::FORWARD,0.16f);
+			//camera.Keyboard(CameraMovement::FORWARD,0.16f);
+			c->Keyboard(CameraMovement::FORWARD, 0.16f);
 		}
 		//Backward
 		if (engineInput->IsKeyDown(SDLK_s)) {
-			camera.Keyboard(CameraMovement::BACKWARD, 0.16f);
+			//camera.Keyboard(CameraMovement::BACKWARD, 0.16f);
+			c->Keyboard(CameraMovement::BACKWARD, 0.16f);
 		}
 		//Right
 		if (engineInput->IsKeyDown(SDLK_d)) {
-			camera.Keyboard(CameraMovement::RIGHT, 0.16f);
+			//camera.Keyboard(CameraMovement::RIGHT, 0.16f);
+			c->Keyboard(CameraMovement::RIGHT, 0.16f);
 		}
 		//Left
 		if (engineInput->IsKeyDown(SDLK_a)) {
-			camera.Keyboard(CameraMovement::LEFT, 0.16f);
+			//camera.Keyboard(CameraMovement::LEFT, 0.16f);
+			c->Keyboard(CameraMovement::LEFT, 0.16f);
+		}
+		//Quit
+		if (engineInput->IsKeyDown(SDLK_ESCAPE)) {
+			isRunning = false;
+		}
+		//Swap camera
+		if (engineInput->WasKeyPressed(SDLK_p)) {
+			go.RemoveComponent<Camera>();
+			go.AddComponent(camera2);
+			c = static_cast<Camera*>(go.GetComponent<Camera>());
 		}
 
 		//Camera
 		if (engineInput->IsKeyDown(SDLK_LEFT)) {
-			camera.MouseMovement(-5, 0, true);
+			//camera.MouseMovement(-5, 0, true);
+			c->MouseMovement(-5, 0, true);
 		}
 		if (engineInput->IsKeyDown(SDLK_RIGHT)) {
-			camera.MouseMovement(5, 0, true);
+			//camera.MouseMovement(5, 0, true);
+			c->MouseMovement(5, 0, true);
 		}
 		if (engineInput->IsKeyDown(SDLK_UP)) {
-			camera.MouseMovement(0, 5, true);
+			//camera.MouseMovement(0, -5, true);
+			c->MouseMovement(0, -5, true);
 		}
 		if (engineInput->IsKeyDown(SDLK_DOWN)) {
-			camera.MouseMovement(0, -5, true);
+			//camera.MouseMovement(0, 5, true);
+			c->MouseMovement(0, 5, true);
 		}
-		
 
 		//Mouse input
-		//if (engineInput->GetMouseMotionX() > 0 || engineInput->GetMouseMotionY() > 0) {
-		//	camera.MouseMovement(engineInput->GetMouseMotionX(), engineInput->GetMouseMotionY(),true);
-		//}
+		//camera.MouseMovement(engineInput->GetMouseMotionX(), -engineInput->GetMouseMotionY(),true);
+		c->MouseMovement(engineInput->GetMouseMotionX(), engineInput->GetMouseMotionY(), true);
+
+		go.Update();
 
 		//Uniform changes
 		glm::mat4 model, view, projection;
 
-		model = glm::translate(model, -camera.GetPosition());
+		model = glm::translate(model, -c->GetPosition());
 		model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		view = camera.GetViewMatrix();
-		projection = glm::perspective(glm::radians(camera.GetFov()), 800.0f / 600.0f, 0.1f, 100.0f);
+		view = c->GetViewMatrix();
+		projection = glm::perspective(glm::radians(c->GetFov()), engineWindow->GetWidth() / engineWindow->GetHeight(), 0.1f, 100.0f);
 
-		//int modelLoc = glGetUniformLocation(shader.GetShaderProgramID(), "model");
-		//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		shader.SetMat4("model", model);
 
-		//int viewLoc = glGetUniformLocation(shader.GetShaderProgramID(), "view");
-		//glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 		shader.SetMat4("view", view);
 
-		//int projLoc = glGetUniformLocation(shader.GetShaderProgramID(), "projection");
-		//glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 		shader.SetMat4("projection", projection);
 
 		if (engineInput->QuitRequested()) {
