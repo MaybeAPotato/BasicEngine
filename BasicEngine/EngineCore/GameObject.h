@@ -36,8 +36,11 @@ namespace Core {
 		void RemoveChild(GameObject& g);
 		void RemoveComponent(int index);
 		void RemoveChild(int index);
+
 		GameObject* GetChildren() { return children[0]; }
 		Component* GetComponent() { return components[0]; }
+		GameObject* GetChildren(int index) { return children.at(index); }
+		Component* GetComponent(int index) { return components.at(index); }
 
 		template<class T>
 		GameObject* GetChildren() {
@@ -70,10 +73,24 @@ namespace Core {
 
 		template<class T>
 		void RemoveChild() {
-			for (auto itr = children.begin(); itr != components.end(); itr++) {
+			for (auto itr = children.begin(); itr != children.end(); itr++) {
 				if (dynamic_cast<T*>(*itr)) {
 					children.erase(itr);
 				}
+			}
+		}
+
+		template<class T>
+		void AddChildren() {
+			if (dynamic_cast<GameObject*>(T)) {
+				children.push_back(T);
+			}
+		}
+
+		template<class T>
+		void AddComponent() {
+			if (dynamic_cast<Component*>(T)){
+				components.push_back(T);
 			}
 		}
 

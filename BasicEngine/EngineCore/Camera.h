@@ -1,22 +1,20 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "Component.h"
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Component.h"
+
+enum class CameraMovement : unsigned __int8 {
+	FORWARD = 0,
+	BACKWARD = 1,
+	RIGHT = 3,
+	LEFT = 4,
+	TOTAL
+};
 namespace Core {
-
-	enum class CameraMovement : unsigned __int8 {
-		FORWARD,
-		BACKWARD,
-		RIGHT,
-		LEFT,
-		TOTAL
-	};
-
 	class Camera : public Component
 	{
 		//Default values
@@ -49,16 +47,17 @@ namespace Core {
 	public:
 		Camera();
 		~Camera();
-		Camera(glm::vec3 pos,glm::vec3 forward,glm::vec3 up,glm::vec3 right,glm::vec3 worldup,float yaw,float pitch,float movespeed,float sensitivity,float fov);
-		glm::mat4 GetViewMatrix() { return glm::lookAt(Position, Position + Forward, Up); /*position,pointing forward(-Z axis),up*/}
+		Camera(glm::vec3 pos, glm::vec3 forward, glm::vec3 up, glm::vec3 right, glm::vec3 worldup, float yaw, float pitch, float movespeed, float sensitivity, float fov);
+		glm::mat4 GetViewMatrix() { return glm::lookAt(Position, Position + Forward, Up); /*position,pointing forward(-Z axis),up*/ }
 		void Keyboard(CameraMovement direction, float deltaTime);
+		void Controller(float xvalue, float zvalue, float deltaTime);
 		void MouseMovement(float xoffset, float yoffset, bool constrainPitch = true);
 		void MouseScroll(float offset);
 
-		bool Init() override;
-		void Update() override;
-		void Render() override;
-		bool Shutdown() override;
+		bool Init();
+		void Update();
+		void Render();
+		bool Shutdown();
 
 		void InvertYaw() { isYawInvert = isYawInvert ? false : true; }
 		void InvertPitch() { isPitchInvert = isPitchInvert ? false : true; }
@@ -74,6 +73,5 @@ namespace Core {
 		void Rotate(float yaw, float pitch) { Yaw = yaw; Pitch = pitch; }
 
 	};
-
 }
 #endif // !CAMERA_H

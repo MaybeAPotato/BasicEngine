@@ -114,10 +114,10 @@
     <ClInclude Include="Vertex.h">
       <Filter>Header Files\Component</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h">
+    <ClInclude Include="Component.h">
       <Filter>Header Files\Component</Filter>
     </ClInclude>
-    <ClInclude Include="Component.h">
+    <ClInclude Include="Camera.h">
       <Filter>Header Files\Component</Filter>
     </ClInclude>
   </ItemGroup>
@@ -194,6 +194,24 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\SandBox\container.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\SandBox\back.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\SandBox\bottom.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\SandBox\front.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\SandBox\left.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\SandBox\right.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\SandBox\top.jpg">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

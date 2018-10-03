@@ -42,8 +42,8 @@ namespace Core {
 			//How many frames during second
 			auto fps = frameCounter / elapsedSeconds;
 			//Print the time
-			sprintf_s(buffer, 500, "FPS: %f\n", fps);
-			printf("%s", buffer);
+			///sprintf_s(buffer, 500, "FPS: %f\n", fps);
+			///printf("%s", buffer);
 
 			frameCounter = 0;
 			elapsedSeconds = 0.0;

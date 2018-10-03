@@ -20,6 +20,9 @@ namespace Core{
 			return false;
 		}
 
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LESS);
+
 		return true;
 	}
 	bool Graphic::ShutdownOpenGL()
@@ -44,9 +47,7 @@ namespace Core{
 	{
 		//GL
 		//Clear these whenever you draw
-		glClearDepth(1.0f);
-		//Buffers that hold informtaion for colour
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//glClearDepth(1.0f);
 
 		//glEnableClientState(GL_COLOR_ARRAY);
 
@@ -59,7 +60,11 @@ namespace Core{
 		glVertex2f(0, 500);
 		glVertex2f(500, 500);*/
 		//Ends drawing
-		glEnd();
+		//glEnd();
+
+		//Buffers that hold informtaion for colour
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 	bool Graphic::Shutdown()
 	{

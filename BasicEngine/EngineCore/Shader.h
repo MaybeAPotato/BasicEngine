@@ -8,6 +8,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <gl/glew.h>
+
 namespace Core {
 	class Shader : public Asset
 	{
@@ -21,6 +23,7 @@ namespace Core {
 		class Vertex* vertex;
 
 	public:
+		Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
 		Shader(const char& vertexSource,const char& fragmentSource);
 		Shader(const char& vertexSource, const char& fragmentSource, Mesh& m, Vertex& v);
 		~Shader();

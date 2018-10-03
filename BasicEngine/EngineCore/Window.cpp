@@ -21,12 +21,13 @@ namespace Core {
 			return false;
 		}
 
-		window = SDL_CreateWindow(windowName, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
+		window = SDL_CreateWindow(windowName, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 		//If failed to create window
 		if (!window) {
 			return false;
 		}
-		SDL_GLContext glContexxt = SDL_GL_CreateContext(window);
+
+		SDL_GLContext glContext = SDL_GL_CreateContext(window);
 
 		//Creating a double buffer
 		//Draw on back buffer display on front
@@ -38,6 +39,7 @@ namespace Core {
 		//Set surface
 		screenSurface = SDL_GetWindowSurface(window);
 
+		//Remove mouse cursor and capture in window
 		SDL_ShowCursor(SDL_DISABLE);
 		SDL_SetWindowGrab(window, SDL_TRUE);
 		SDL_SetRelativeMouseMode(SDL_TRUE);
@@ -50,6 +52,7 @@ namespace Core {
 	}
 	void Window::Render()
 	{
+		
 	}
 	bool Window::Shutdown()
 	{

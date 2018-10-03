@@ -1,11 +1,10 @@
 #include "Camera.h"
-
 namespace Core {
-	Camera::Camera() : Position(0.0f,0.0f,0.0f), Forward(0.0f,0.0f,-1.0f), Up(0.0f,1.0f,0.0f), Right(1.0f,0.0f,0.0f), WorldUp(0.0f,1.0f,0.0f), Yaw(YAW), Pitch(PITCH), MovementSpeed(1.0f), MouseSensitivity(MOUSE_SENSITIVITY), FOV(FIELD_OF_VIEW)
+	Camera::Camera() : Position(0.0f, 0.0f, 0.0f), Forward(0.0f, 0.0f, -1.0f), Up(0.0f, 1.0f, 0.0f), Right(1.0f, 0.0f, 0.0f), WorldUp(0.0f, 1.0f, 0.0f), Yaw(YAW), Pitch(PITCH), MovementSpeed(1.0f), MouseSensitivity(MOUSE_SENSITIVITY), FOV(FIELD_OF_VIEW)
 	{
 	}
 
-	Camera::Camera(glm::vec3 pos, glm::vec3 forward, glm::vec3 up, glm::vec3 right, glm::vec3 worldup, float yaw, float pitch, float movespeed, float sensitivity, float fov) : Position(pos),Forward(forward),Up(up),Right(right),WorldUp(worldup),Yaw(yaw),Pitch(pitch), MovementSpeed(movespeed),MouseSensitivity(sensitivity),FOV(fov)
+	Camera::Camera(glm::vec3 pos, glm::vec3 forward, glm::vec3 up, glm::vec3 right, glm::vec3 worldup, float yaw, float pitch, float movespeed, float sensitivity, float fov) : Position(pos), Forward(forward), Up(up), Right(right), WorldUp(worldup), Yaw(yaw), Pitch(pitch), MovementSpeed(movespeed), MouseSensitivity(sensitivity), FOV(fov)
 	{
 	}
 	bool Camera::Init()
@@ -39,16 +38,16 @@ namespace Core {
 		float velocity = MovementSpeed * deltaTime;
 		switch (direction)
 		{
-		case Core::CameraMovement::FORWARD:
+		case CameraMovement::FORWARD:
 			Position += Forward * velocity;
 			break;
-		case Core::CameraMovement::BACKWARD:
+		case CameraMovement::BACKWARD:
 			Position -= Forward * velocity;
 			break;
-		case Core::CameraMovement::RIGHT:
+		case CameraMovement::RIGHT:
 			Position += Right * velocity;
 			break;
-		case Core::CameraMovement::LEFT:
+		case CameraMovement::LEFT:
 			Position -= Right * velocity;
 			break;
 		default:
@@ -56,6 +55,25 @@ namespace Core {
 		}
 
 		//Update();
+	}
+
+	void Camera::Controller(float xvalue, float zvalue, float deltaTime)
+	{
+		float velocity = MovementSpeed * deltaTime;
+
+		if (xvalue > 0) {
+			Position += Right * velocity;
+		}
+		else if (xvalue < 0) {
+			Position -= Right * velocity;
+		}
+
+		if (zvalue < 0) {
+			Position += Forward * velocity;
+		}
+		else if (zvalue > 0) {
+			Position -= Forward * velocity;
+		}
 	}
 
 	void Camera::MouseMovement(float xoffset, float yoffset, bool constrainPitch)

@@ -1,15 +1,22 @@
 #include "Input.h"
 #include <SDL/SDL.h>
 #include <stdio.h>
-
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_sdl_gl3.h"
+//#include "imgui/imgui.h"
+//#include "imgui/imgui_impl_sdl_gl3.h"
 
 #include <iostream>
 
+#define MAX(a,b) a > b ? a : b
+#define MIN(a,b) a < b ? a : b
+#define CLAMP(x,upper,lower) MIN(upper,MAX(x,lower))
+
 namespace Core {
-	Input::Input() : System(SystemType::INPUT), requestedQuit(false)
+	Input::Input() : requestedQuit(false),System(SystemType::INPUT)
 	{
+		joystickLeftAxisX = 0;
+		joystickLeftAxisY = 0;
+		joystickRightAxisX = 0;
+		joystickRightAxisY = 0;
 	}
 
 	Input::~Input()
@@ -17,50 +24,157 @@ namespace Core {
 	}
 
 	bool Input::Init() {
+		SDL_InitSubSystem(SDL_INIT_JOYSTICK);
+
+		//Check for joysticks
+		for (int i = 0; i < SDL_NumJoysticks(); i++) {
+			joy = SDL_JoystickOpen(i);
+
+			if (joy) {
+				std::cout << "Opened joystick " << i << std::endl;
+				std::cout << "Name: " << SDL_JoystickNameForIndex(i) << std::endl;
+				std::cout << "Id: " << SDL_JoystickInstanceID(joy) << std::endl;
+				std::cout << "Number of hats: " << SDL_JoystickNumHats(joy) << std::endl;
+				std::cout << "Number of axes: " << SDL_JoystickNumAxes(joy) << std::endl;
+				std::cout << "Number of buttons: " << SDL_JoystickNumButtons(joy) << std::endl;
+				std::cout << "Number of balls: " << SDL_JoystickNumBalls(joy) << std::endl;
+			}
+			else {
+				std::cout << "Failed to open joystick " << i << std::endl;
+				std::cout << SDL_GetError() << std::endl;
+				//***************Remove later!!
+				return false;
+			}
+		}
+
+
 		return true;
 	}
 	void Input::Update() {
 		oldkeys = keys;
-		
+
 		mouseMotionX = 0;
 		mouseMotionY = 0;
+		mouseWheelY = 0;
 
 		SDL_Event e;
 
 		while (SDL_PollEvent(&e) != 0) {
 			//Check for event type
 			switch (e.type) {
-			//Send to UI
-			ImGui_ImplSdlGL3_ProcessEvent(&e);
-			//Is key down
+				//Send to UI
+				//ImGui_ImplSdlGL3_ProcessEvent(&e);
+				//Is key down
 			case(SDL_KEYDOWN):
 				//Check for key
 				keys[e.key.keysym.sym] = true;
 				break;
-			//For mouse movement
+				//For mouse movement
 			case(SDL_MOUSEMOTION):
 				mouseMotionX = e.motion.xrel;
 				mouseMotionY = e.motion.yrel;
 				break;
-			//Is key up
+				//For mouse wheel
+			case(SDL_MOUSEWHEEL):
+				mouseWheelY = e.wheel.y;
+				break;
+				//Is key up
 			case(SDL_KEYUP):
 				keys[e.key.keysym.sym] = false;
 				break;
-			//Is quit
+				//For controller axis
+			case(SDL_JOYAXISMOTION):
+				//Value for axis ranges form -32768 to 32767
+				//Some joy sticks use 2 and 3 for extra buttons
+				//Left x
+				if (e.jaxis.axis == 0 && e.jaxis.value > JOYSTICK_DEAD_ZONE) {
+					joystickLeftAxisX = 1;
+				}
+				else if (e.jaxis.axis == 0 && e.jaxis.value < -JOYSTICK_DEAD_ZONE) {
+					joystickLeftAxisX = -1;
+				}
+				else if (e.jaxis.axis == 0 && e.jaxis.value == 0) {
+					joystickLeftAxisX = 0;
+				}
+
+				//Left y
+				if (e.jaxis.axis == 1 && e.jaxis.value > JOYSTICK_DEAD_ZONE) {
+					joystickLeftAxisY = 1;
+				}
+				else if (e.jaxis.axis == 1 && e.jaxis.value < -JOYSTICK_DEAD_ZONE) {
+					joystickLeftAxisY = -1;
+				}
+				else if (e.jaxis.axis == 1 && e.jaxis.value == 0) {
+					joystickLeftAxisY = 0;
+				}
+
+				//Right x
+				if (e.jaxis.axis == 3 && e.jaxis.value > JOYSTICK_DEAD_ZONE) {
+					joystickRightAxisX = 1;
+				}
+				else if (e.jaxis.axis == 3 && e.jaxis.value < -JOYSTICK_DEAD_ZONE) {
+					joystickRightAxisX = -1;
+				}
+				else if (e.jaxis.axis == 3 && e.jaxis.value == 0) {
+					joystickRightAxisX = 0;
+				}
+
+				//Right y
+				if (e.jaxis.axis == 4 && e.jaxis.value > JOYSTICK_DEAD_ZONE) {
+					joystickRightAxisY = 1;
+				}
+				else if (e.jaxis.axis == 4 && e.jaxis.value < -JOYSTICK_DEAD_ZONE) {
+					joystickRightAxisY = -1;
+				}
+				else if(e.jaxis.axis == 4 && e.jaxis.value == 0) {
+					joystickRightAxisY = 0;
+				}
+				break;
+				//For joy hat motion(NOT IMPLEMENTED)
+				/*case(SDL_JOYHATMOTION):
+					std::cout << e.jhat.hat << std::endl;
+					switch (e.jhat.value) {
+						case(SDL_HAT_CENTERED):
+						break;
+						case(SDL_HAT_UP):
+						break;
+						case(SDL_HAT_RIGHT):
+						break;
+						case(SDL_HAT_DOWN):
+						break;
+						case(SDL_HAT_LEFT):
+						break;
+						case(SDL_HAT_RIGHTUP):
+						break;
+						case(SDL_HAT_RIGHTDOWN):
+						break;
+						case(SDL_HAT_LEFTUP):
+						break;
+						case(SDL_HAT_LEFTDOWN):
+						break;
+					}*/
+					//Is quit
 			case(SDL_QUIT):
 				requestedQuit = true;
 				break;
 			}
 		}
 	}
-	void Input::Render(){
+	void Input::Render() {
 	}
 	bool Input::Shutdown() {
+		//Close if open
+		if (SDL_JoystickGetAttached(joy)) {
+			SDL_JoystickClose(joy);
+		}
+		//delete joy;
+
+		keys.clear();
+		oldkeys.clear();
+
 		return true;
 	}
-	SystemType Input::getSystemType() {
-		return SystemType::INPUT;
-	}
+
 	DirectionInput Input::getDirectionInput() {
 		return dr;
 	}
@@ -93,7 +207,7 @@ namespace Core {
 
 		//If key was in old array
 		if (it != oldkeys.end()) {
-				 //If false and if true
+			//If false and if true
 			return !oldkeys[key] && keys[key];
 		}
 
@@ -105,7 +219,7 @@ namespace Core {
 
 		//If key was in old array
 		if (it != oldkeys.end()) {
-				 //If true and if false
+			//If true and if false
 			return oldkeys[key] && !keys[key];
 		}
 

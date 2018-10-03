@@ -5,9 +5,47 @@
 #include <GL/glew.h>
 
 #include <iostream>
+#include <string>
+#include <fstream>
+#include <sstream>
 
 namespace Core {
+	Shader::Shader(const GLchar * vertexPath, const GLchar * fragmentPath)
+	{
+		//Retrieve vertex/fragment source code from filePath
+		std::string vertexCode;
+		std::string fragmentCode;
+		std::ifstream vShaderFile;
+		std::ifstream fShaderFile;
 
+		//Ensure ifstream objects can throw exception
+		vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+		fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+
+		bool failed = false;
+
+		try {
+			//Open files
+			vShaderFile.open(vertexPath);
+			fShaderFile.open(fragmentPath);
+			std::stringstream vShaderStream, fShaderStream;
+			//Read file buffer contents into stream
+			vShaderStream << vShaderFile.rdbuf();
+			fShaderStream << fShaderFile.rdbuf();
+			//Close file handlers
+			vShaderFile.close();
+			fShaderFile.close();
+			//Convert stream into string
+			vertexCode = vShaderStream.str();
+			fragmentCode = fShaderStream.str();
+		}
+		catch (std::ifstream::failure e) {
+			std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY READ" << std::endl;
+		}
+
+		vShaderCode = vertexCode.c_str();
+		fShaderCode = fragmentCode.c_str();
+	}
 	Shader::Shader(const char& vertexSource, const char& fragmentSource) : vShaderCode(&vertexSource),fShaderCode(&fragmentSource)
 	{
 	}
