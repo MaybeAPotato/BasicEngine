@@ -11,7 +11,16 @@ namespace Core {
 
 	}
 
-	Image::Image(std::vector<const char*> faces)
+	Cubemap::Cubemap(std::vector<const char*> f) : faces(f)
+	{
+
+	}
+
+	Cubemap::~Cubemap()
+	{
+	}
+
+	bool Cubemap::Init()
 	{
 		int w, h, nr;
 
@@ -19,11 +28,11 @@ namespace Core {
 
 		unsigned char* data;
 
-		glGenTextures(1, &textureID);
-
-		glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
-
-		stbi_set_flip_vertically_on_load(true);
+		glGenTextures(1, &cubemapID);
+		
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapID);
+		
+		stbi_set_flip_vertically_on_load(false);
 
 		//Increment faces
 		for (GLuint i = 0; i < faces.size(); i++) {
@@ -45,7 +54,7 @@ namespace Core {
 				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, format, w, h, 0, format, GL_UNSIGNED_BYTE, data);
 			}
 			else {
-				std::cout << "CUBEMAP TEXUTE FAILED TO LOAD AT PATH: " << &faces[i] << std::endl;
+				std::cout << "CUBEMAP TEXTURE FAILED TO LOAD AT PATH: " << &faces[i] << std::endl;
 			}
 
 			stbi_image_free(data);
@@ -54,12 +63,29 @@ namespace Core {
 		//Wrapping
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);//R being z-axis
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);//R being z-axis?
 		//Filtering
 		//Set to clamp do to hardware limitations
 		//Returns edge values when sampling between faces
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+		return true;
+	}
+
+	void Cubemap::Update()
+	{
+	}
+
+	void Cubemap::Render()
+	{
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapID);
+		glActiveTexture(GL_TEXTURE0);
+	}
+
+	bool Cubemap::Shutdown()
+	{
+		return true;
 	}
 
 
@@ -123,6 +149,8 @@ namespace Core {
 	}
 	void Image::Render()
 	{
+		glBindTexture(GL_TEXTURE_2D, textureID);
+		glActiveTexture(GL_TEXTURE0);
 	}
 	bool Image::Shutdown()
 	{

@@ -41,6 +41,72 @@ namespace Core {
 				std::cout << "Number of axes: " << SDL_JoystickNumAxes(joy) << std::endl;
 				std::cout << "Number of buttons: " << SDL_JoystickNumButtons(joy) << std::endl;
 				std::cout << "Number of balls: " << SDL_JoystickNumBalls(joy) << std::endl;
+				Sint16* state = new Sint16();
+				for (unsigned int i = 0; i < SDL_JoystickNumAxes(joy); i++) {
+					//0 - left x
+					//1 - left y
+					//3 - right x
+					//4 - right y
+					if (SDL_JoystickGetAxisInitialState(joy,i,state)) {
+						std::cout << i << std::endl;
+						std::cout << *state << std::endl;
+						switch (i)
+						{
+						case(0):
+							leftXAxis = *state;
+							if (*state > JOYSTICK_DEAD_ZONE) {
+								joystickLeftAxisX = 1;
+							}
+							else if(*state < -JOYSTICK_DEAD_ZONE){
+								joystickLeftAxisX = -1;
+							}
+							else {
+								joystickLeftAxisX = 0;
+							}
+							break;
+						case(1):
+							leftYAxis = *state;
+							if (*state > JOYSTICK_DEAD_ZONE) {
+								joystickLeftAxisY = 1;
+							}
+							else if (*state < -JOYSTICK_DEAD_ZONE) {
+								joystickLeftAxisY = -1;
+							}
+							else {
+								joystickLeftAxisY = 0;
+							}
+							break;
+						case(3):
+							rightXAxis = *state;
+							if (*state > JOYSTICK_DEAD_ZONE) {
+								joystickRightAxisX = 1;
+							}
+							else if (*state < -JOYSTICK_DEAD_ZONE) {
+								joystickRightAxisX = -1;
+							}
+							else {
+								joystickRightAxisX = 0;
+							}
+							break;
+						case(4):
+							rightYAxis = *state;
+							if (*state > JOYSTICK_DEAD_ZONE) {
+								joystickRightAxisY = 1;
+							}
+							else if (*state < -JOYSTICK_DEAD_ZONE) {
+								joystickRightAxisY = -1;
+							}
+							else {
+								joystickRightAxisY = 0;
+							}
+							break;
+						default:
+							break;
+						}
+					}
+				}
+				state = nullptr;
+				delete state;
 			}
 			else {
 				std::cout << "Failed to open joystick " << i << std::endl;
@@ -48,6 +114,8 @@ namespace Core {
 				//***************Remove later!!
 				return false;
 			}
+
+			
 		}
 
 
@@ -108,13 +176,13 @@ namespace Core {
 			case(SDL_JOYAXISMOTION):
 				//Value for axis ranges form -32768 to 32767
 				//Some joy sticks use 2 and 3 for extra buttons
+				//Set axis values
 				if (e.jaxis.axis == 0) {
 					leftXAxis = e.jaxis.value;
 				}
 				if (e.jaxis.axis == 1) {
 					leftYAxis = e.jaxis.value;
 				}
-
 
 				//Left x
 				if (e.jaxis.axis == 0 && e.jaxis.value > JOYSTICK_DEAD_ZONE) {
@@ -138,6 +206,7 @@ namespace Core {
 					joystickLeftAxisY = 0;
 				}
 
+				//Set axis values
 				if (e.jaxis.axis == 3) {
 					rightXAxis = e.jaxis.value;
 				}
@@ -168,6 +237,7 @@ namespace Core {
 				}
 
 				//Triggers start at -32768; a half pull is around the negatives and anything beyond that is positive up to 32767
+
 				//Left trigger - PS4 = 3
 				if (e.jaxis.axis == 2 && e.jaxis.value > 0) {
 					joystickLeftTrigger = 1;
@@ -190,8 +260,6 @@ namespace Core {
 					joystickRightTrigger = 0;
 				}
 
-				std::cout << e.jaxis.value << std::endl;
-
 				break;
 			case(SDL_JOYBUTTONDOWN):
 				joyButtons[e.jbutton.button] = true;
@@ -200,8 +268,8 @@ namespace Core {
 				joyButtons[e.jbutton.button] = false;
 				break;
 				//For joy hat motion(NOT IMPLEMENTED)
-				/*case(SDL_JOYHATMOTION):
-					std::cout << e.jhat.hat << std::endl;
+				/*
+				case(SDL_JOYHATMOTION):
 					switch (e.jhat.value) {
 						case(SDL_HAT_CENTERED):
 						break;
@@ -222,7 +290,7 @@ namespace Core {
 						case(SDL_HAT_LEFTDOWN):
 						break;
 					}*/
-					//Is quit
+			//Is quit
 			case(SDL_QUIT):
 				requestedQuit = true;
 				break;

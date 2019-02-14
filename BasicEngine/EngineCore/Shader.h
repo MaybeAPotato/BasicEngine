@@ -31,7 +31,7 @@ namespace Core {
 		bool Init() override;
 		///void Update() override;
 		bool Shutdown() override;
-		///void Render() override;
+		void Render() override { glUseProgram(ID); }
 		void Use();
 
 		const unsigned int GetShaderProgramID() { return ID; }

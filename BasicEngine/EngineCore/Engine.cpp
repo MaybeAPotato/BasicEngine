@@ -15,6 +15,8 @@
 #include "Vertex.h"
 #include "Camera.h"
 
+
+
 //System
 #include "SystemManager.h"
 #include "Window.h"
@@ -37,9 +39,12 @@
 const char* vertexShader =
 "#version 330 core\n"
 "layout(location = 0) in vec3 aPos;\n" //Helps openGL know where to put variable
-"layout(location = 1) in vec2 aTexCoord;\n"
+"layout(location = 1) in vec3 aNormal;\n"
+//"layout(location = 2) in vec2 aTexCoords;\n"
 
 "out vec2 TexCoord;\n"
+"out vec3 Normal;\n"
+"out vec3 Position;\n"
 
 "uniform mat4 model;\n"
 "uniform mat4 view;\n"
@@ -47,21 +52,39 @@ const char* vertexShader =
 //"uniform mat4 transform;\n"
 
 "void main(){\n"
+"mat3 normalMatrix = mat3(transpose(inverse(model)));\n"
+"Normal =  normalMatrix * aNormal;"
+"TexCoord = aPos.xy;\n"
+"Position = vec3( model * vec4(aPos,1.0));\n"
 "gl_Position = projection * view * model * vec4(aPos,1.0);\n"//Saved variable from openGL
 //"gl_Position = transform * vec4(aPos,1.0);\n"
-"TexCoord = aTexCoord;\n"
 "}\n\0";
 
 const char* fragmentShader =
 "#version 330 core\n"
 "out vec4 FragColor;\n"
 
+"in vec3 Position;\n"
 "in vec2 TexCoord;\n"
+"in vec3 Normal;\n"
 
 "uniform sampler2D texture1;\n"
+"uniform samplerCube skybox;\n"
+"uniform vec3 cameraPos;\n"
 
 "void main(){\n"
-"FragColor = texture(texture1,TexCoord);\n"
+"float ratio = 1.00/1.52;\n"
+"vec3 I = normalize(Position - cameraPos);\n"
+
+//v_refract = (m1/m2) * I + ((m1/m2) * cos(theta_1) - cos(theta_2)) * normal
+//where theta_1 is incidence angle and theta_2 is the refracted angle
+//v_reflect = I + 2 * cos(theta_1) * normal
+//cos(theta_1) = -normal * I; //must always be positive
+//"vec3 R = ratio * I + (ratio * c - sqrt(1 - (ratio * ratio) * (I - c * c))) * Normal;\n"
+
+"vec3 R = refract(I,normalize(Normal),ratio);\n"
+"FragColor = vec4(texture(skybox,R).rgb,1.0);\n"
+//"FragColor = texture(texture1,TexCoord);\n"
 "}\n\0";
 
 const char* skyVertex =
@@ -83,52 +106,23 @@ const char* skyVertex =
 const char* skyFrag =
 "#version 330 core\n"
 
-"in vec3 TexCoords;\n"
-
 "out vec4 FragColor;\n"
+
+"in vec3 TexCoords;\n"
 
 "uniform samplerCube skybox;\n"
 
 "void main() {\n"
 	"FragColor = texture(skybox, TexCoords);\n"
+	//"FragColor = vec4(1.0,0.0,0.0,0.0);\n"
 "}\n\0";
-
-const char* bufferVertexSource =
-"#version 330 core\n"
-"layout (location = 0) in vec2 aPos;\n"
-"layout (location = 1) in vec2 aTexCoords;\n"
-
-"out vec2 TexCoords;\n"
-
-"void main(){\n"
-"gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);\n"
-"TexCoords = aTexCoords;\n"
-"}\n\0";
-
-const char* bufferFragmentSource =
-"#version 330 core\n"
-
-"in vec2 TexCoords;\n"
-
-"out vec4 FragColor;\n"
-
-"uniform sampler2D screenTexture;\n"
-
-"void main(){\n"
-"FragColor = texture(screenTexture,TexCoords);\n"
-"}\n\0";
-
-const char* meshVertices =
-"v 0.5f, 0.5f, 0.0f\n"
-"v 0.5f, -0.5f, 0.0f\n"
-"v -0.5, -0.5f, 0.0f\n"
-"v -0.5f, 0.5f, 0.0f\n"
-"i 0, 1, 3\n"
-"i 1, 2, 3\n"
-;
-
 
 std::vector<float>vertices = { 0.5f, 0.5f, 0.0f,
+0.5f, -0.5f,0.0f,
+-0.5, -0.5f,0.0f,
+-0.5f,0.5f,0.0f };
+
+float vesices[] = { 0.5f, 0.5f, 0.0f,
 0.5f, -0.5f,0.0f,
 -0.5, -0.5f,0.0f,
 -0.5f,0.5f,0.0f };
@@ -142,6 +136,53 @@ float textCoords[] = {
 	0.0f,1.0f,
 	1.0f,1.0f
 };
+
+//For a cube with normals
+float cubeVertices[] = {
+	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+
+	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+
+	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+	0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+	0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+	0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+	0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+	0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+	0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+	0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+};
+
+glm::vec4 lightPos = glm::vec4(0.0f,0.0f,0.0f,00.0f);
 
 //Sky box
 float skyboxVertices[] = {
@@ -190,12 +231,12 @@ float skyboxVertices[] = {
 };
 
 std::vector<const char*> faces{
-		"right.jpg",
-		"left.jpg",
-		"top.jpg",
-		"bottom.jpg",
-		"front.jpg",
-		"back.jpg"
+		"posx.jpg",//right
+		"negx.jpg",//left
+		"posy.jpg",//top
+		"negy.jpg",//bottom
+		"posz.jpg",//front
+		"negz.jpg"//back
 };
 
 
@@ -205,15 +246,17 @@ namespace Core {
 
 	Core::GameObject go;
 
-	Core::Mesh mesh(vertices, indices);
 	Core::Image image("container.jpg");
 	Core::Shader shader(*vertexShader, *fragmentShader);
-	Core::Vertex vertex(mesh, shader);
 
 	//For sky box
-	Core::Image cubemap(faces);
+	Core::Cubemap cubemap(faces);
 	Core::Shader skyboxShader(*skyVertex,*skyFrag);
 	unsigned int skyVAO, skyVBO;
+
+	//For cube
+	//Core::Shader cubeShader("toonShaderVertex.vs", "toonShaderFragment.fs");
+	unsigned int cubeVAO, cubeVBO;
 
 	Engine::Engine() : isRunning(true),engineWindow(new Window()),engineGraphic(new Graphic()),engineClock(new Clock()),engineUI(new SystemUI()),engineInput(new Input()){
 		SystemManager::GetInstance().AddSystem(*engineWindow);
@@ -221,30 +264,33 @@ namespace Core {
 		SystemManager::GetInstance().AddSystem(*engineInput);
 		SystemManager::GetInstance().AddSystem(*engineGraphic);
 		SystemManager::GetInstance().AddSystem(*engineUI);
+
 	}
 
 	Engine::~Engine(){
 		#if _DEBUG
 		LogManager::Log(Core::Loglevel::DEFAULT, "Engine shutdown");
 		#endif
-		delete engineWindow;
 		engineWindow = nullptr;
+		delete engineWindow;
 
-		delete engineGraphic;
 		engineGraphic = nullptr;
+		delete engineGraphic;
 
-		delete engineClock;
 		engineClock = nullptr;
+		delete engineClock;
 
-		delete engineUI;
 		engineUI = nullptr;
+		delete engineUI;
 
-		delete engineInput;
 		engineInput = nullptr;
+		delete engineInput;
+		
+		glDeleteVertexArrays(1,&skyVAO);
+		glDeleteBuffers(1,&skyVBO);
 
-		/*glDeleteVertexArrays(1,&VAO);
-		glDeleteBuffers(1,&VBO);
-		glDeleteBuffers(1, &EBO);*/
+		glDeleteVertexArrays(1, &cubeVAO);
+		glDeleteBuffers(1, &cubeVBO);
 
 		#if _DEBUG
 		LogManager::Log(Core::Loglevel::DEFAULT, "Shutdown");
@@ -277,29 +323,44 @@ namespace Core {
 		}
 
 		image.Init();
-		mesh.Init();
 		shader.Init();
-		vertex.Init();
 		skyboxShader.Init();
+		cubemap.Init();
+
+		glViewport(0, 0, engineWindow->GetWidth(), engineWindow->GetHeight());
+
+		//Cube 
+		glGenVertexArrays(1, &cubeVAO);
+		glGenBuffers(1, &cubeVBO);
+		glBindVertexArray(cubeVAO);
+		glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
+		glEnableVertexAttribArray(0);//Position
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(1);//Normals
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+		//glEnableVertexAttribArray(2);//Texture
+		//glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+		glBindVertexArray(0);
 
 		//Sky box
 		glGenVertexArrays(1, &skyVAO);
 		glGenBuffers(1, &skyVBO);
 		glBindVertexArray(skyVAO);
 		glBindBuffer(GL_ARRAY_BUFFER, skyVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), skyboxVertices, GL_STATIC_DRAW);
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 		glBindVertexArray(0);
 
+		go.AddComponent(camera);
+
 		skyboxShader.Use();
 		skyboxShader.SetInt("skybox", 0);
 
-		go.AddComponent(camera);
-		go.AddComponent(vertex);
-
 		shader.Use();
-		shader.SetInt("texture1", 0);
+		//shader.SetInt("texture1", 0);
+		shader.SetInt("skybox", 0);
 		//glUniform1i(glGetUniformLocation(shader.GetShaderProgramID(), "texture1"), 0);
 
 		//auto end = std::chrono::high_resolution_clock().now();
@@ -400,13 +461,15 @@ namespace Core {
 		//Joystick
 		c->Controller(engineInput->GetJoyStickLeftAxisX(), engineInput->GetJoyStickLeftAxisY(), 0.16f);
 		c->MouseMovement(engineInput->GetJoyStickRightAxisX(), engineInput->GetJoyStickRightAxisY(), true);
+		c->MouseMovement(engineInput->GetJoyStickRightAxisX(), engineInput->GetJoyStickRightAxisY());
 
+		//Also updates the camera
 		go.Update();
 
 		//Uniform changes
 		glm::mat4 model, view, projection;
 
-		model = glm::translate(model, glm::vec3(0.0f,0.0f,-2.0f) - c->GetPosition());
+		model = glm::translate(model, glm::vec3(0.0f,0.0f,-4.0f) - c->GetPosition());
 		model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		view = c->GetViewMatrix();
 		projection = glm::perspective(glm::radians(c->GetFov()), engineWindow->GetWidth() / engineWindow->GetHeight(), 0.1f, 100.0f);
@@ -415,44 +478,42 @@ namespace Core {
 		shader.SetMat4("model", model);
 		shader.SetMat4("view", view);
 		shader.SetMat4("projection", projection);
+		shader.SetVec3("cameraPos", c->GetPosition());
 
 		skyboxShader.Use();
-		skyboxShader.SetMat4("view", glm::mat4(glm::mat3(c->GetViewMatrix())));
+		skyboxShader.SetMat4("view",glm::mat4(glm::mat3(view)));
 		skyboxShader.SetMat4("projection", projection);
 
 		if (engineInput->QuitRequested()) {
 			isRunning = false;
 		}
-
-		AssetManager::GetInstance().Update();
-
-		//const auto end = std::chrono::high_resolution_clock().now();
-		//const auto durationMS = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-		//std::cout << durationMS.count() << " ms" << std::endl;
 	}
 
 	void Engine::Render() {
 		SystemManager::GetInstance().Render();
 
+		
 		shader.Use();
+		glBindVertexArray(cubeVAO);
 		glBindTexture(GL_TEXTURE_2D, image.ID());
-		glActiveTexture(GL_TEXTURE0);
-		go.Render();//go->components->render
-
-		//Sky box
-		glDepthFunc(GL_LEQUAL);
-		skyboxShader.Use();
-		glBindVertexArray(skyVAO);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap.ID());
 		glActiveTexture(GL_TEXTURE0);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		glBindVertexArray(0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		go.Render();
+
+		//Sky box
+		glDepthFunc(GL_LEQUAL);
+		//glDisable(GL_DEPTH_TEST | GL_CULL_FACE);
+		skyboxShader.Use();
+		glBindVertexArray(skyVAO);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap.ID());
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glBindVertexArray(0);
 		glDepthFunc(GL_LESS);
-
-
-
-
-		AssetManager::GetInstance().Render();
+		//glEnable(GL_DEPTH_TEST | GL_CULL_FACE);
+		//AssetManager::GetInstance().Render();
 	}
 
 	int Engine::Shutdown()
@@ -472,7 +533,7 @@ namespace Core {
 		#endif
 			success = 1;
 		}
-
+		LogManager::Log(Core::Loglevel::DEFAULT, "Assets shutdown");
 		if (!AssetManager::GetInstance().Shutdown()) {
 		#if _DEBUG
 			LogManager::Log(Core::Loglevel::FATAL, "Failed to properly shutdown an asset");
@@ -481,6 +542,8 @@ namespace Core {
 		}
 
 		go.Shutdown();
+		camera.Shutdown();
+		camera2.Shutdown();
 
 		return success;
 	}

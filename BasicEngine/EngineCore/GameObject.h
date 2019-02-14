@@ -21,6 +21,7 @@ namespace Core {
 		std::vector<GameObject*> children;
 		//Change to ECS
 		std::vector<class Component*> components;
+		std::vector<class Asset*> assets;
 	public:
 		GameObject();
 		virtual ~GameObject();
@@ -36,11 +37,17 @@ namespace Core {
 		void RemoveChild(GameObject& g);
 		void RemoveComponent(int index);
 		void RemoveChild(int index);
+		void AddAsset(Asset& a);
+		void RemoveAsset(Asset& a);
+		void RemoveAsset(int index);
 
 		GameObject* GetChildren() { return children[0]; }
 		Component* GetComponent() { return components[0]; }
+		Asset* GetAsset() { return assets[0]; }
+
 		GameObject* GetChildren(int index) { return children.at(index); }
 		Component* GetComponent(int index) { return components.at(index); }
+		Asset* GetAsset(int index) { return assets.at(index); }
 
 		template<class T>
 		GameObject* GetChildren() {
@@ -72,6 +79,15 @@ namespace Core {
 		}
 
 		template<class T>
+		void RemoveAsset() {
+			for (auto itr = assets.begin(); itr != assets.end(); itr++) {
+				if (dynamic_cast<T*>(*itr)) {
+					assets.erase(itr);
+				}
+			}
+		}
+
+		template<class T>
 		void RemoveChild() {
 			for (auto itr = children.begin(); itr != children.end(); itr++) {
 				if (dynamic_cast<T*>(*itr)) {
@@ -91,6 +107,13 @@ namespace Core {
 		void AddComponent() {
 			if (dynamic_cast<Component*>(T)){
 				components.push_back(T);
+			}
+		}
+
+		template<class T>
+		void AddAsset() {
+			if (dynamic_cast<Asset*>(T)) {
+				assets.push_back(T);
 			}
 		}
 

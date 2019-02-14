@@ -192,27 +192,4 @@
       <Filter>Source Files\Component</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\SandBox\container.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\SandBox\back.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\SandBox\bottom.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\SandBox\front.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\SandBox\left.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\SandBox\right.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\SandBox\top.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-  </ItemGroup>
 </Project>

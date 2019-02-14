@@ -52,7 +52,7 @@ namespace Core {
 	}
 	void Window::Render()
 	{
-		
+
 	}
 	bool Window::Shutdown()
 	{

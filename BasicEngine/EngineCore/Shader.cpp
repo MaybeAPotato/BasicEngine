@@ -68,14 +68,17 @@ namespace Core {
 		int vertex, fragment;
 		int success;
 		char infoLog[512];
+		int infoLength;
 
 		vertex = glCreateShader(GL_VERTEX_SHADER);
 		glShaderSource(vertex, 1, &vShaderCode, NULL);
 		glCompileShader(vertex);
 
 		glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
+
 		if (!success) {
-			glGetShaderInfoLog(vertex, 512, NULL, infoLog);
+			glGetShaderiv(vertex, GL_INFO_LOG_LENGTH, &infoLength);
+			glGetShaderInfoLog(vertex, infoLength, NULL, infoLog);
 			std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILURE\n" << infoLog << std::endl;
 			return false;
 		}
@@ -86,7 +89,8 @@ namespace Core {
 
 		glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
 		if (!success) {
-			glGetShaderInfoLog(vertex, 512, NULL, infoLog);
+			glGetShaderiv(fragment, GL_INFO_LOG_LENGTH, &infoLength);
+			glGetShaderInfoLog(vertex, infoLength, NULL, infoLog);
 			std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILURE\n" << infoLog << std::endl;
 			return false;
 		}

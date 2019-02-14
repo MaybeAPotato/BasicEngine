@@ -7,6 +7,21 @@
 #include <vector>
 
 namespace Core {
+	class Cubemap {
+		std::vector<const char*> faces;
+		unsigned int cubemapID;
+
+	public:
+		Cubemap(std::vector<const char*> f);
+		~Cubemap();
+
+		inline unsigned int ID() { return cubemapID; }
+		bool Init();
+		void Update();
+		void Render();
+		bool Shutdown();
+	};
+
 	class Image : public Asset
 	{
 		unsigned int textureID;
@@ -16,8 +31,6 @@ namespace Core {
 		const char* filepath;
 	public:
 		Image(const char* filepath);
-		//For cube map
-		Image(std::vector<const char*> faces);
 
 		~Image();
 

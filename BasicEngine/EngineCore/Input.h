@@ -114,6 +114,14 @@ namespace Core {
 		inline int GetJoyStickLeftTrigger() { return joystickLeftTrigger; }
 		//Get joystick right trigger
 		inline int GetJoyStickRightTrigger() { return joystickRightTrigger; }
+		//Get left X axis value
+		inline int GetLeftXAxis() { return leftXAxis; }
+		//Get left Y axis value
+		inline int GetLeftYAxis() { return leftYAxis; }
+		//Get right X axis value
+		inline int GerRightXAxis() { return rightXAxis; }
+		//Get right Y axis value
+		inline int GerRightYAxis() { return rightYAxis; }
 
 		//Check if button is down (Button down)
 		bool IsJoyStickButtonDown(unsigned int key);

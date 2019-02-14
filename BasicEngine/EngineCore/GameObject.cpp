@@ -1,5 +1,6 @@
 #include "GameObject.h"
 #include "Component.h"
+#include "Asset.h"
 
 namespace Core {
 
@@ -39,24 +40,49 @@ namespace Core {
 		}
 	}
 
-
 	void GameObject::RemoveComponent(int index)
 	{
 		components.erase(components.begin() + index);
 	}
+
 	void GameObject::RemoveChild(int index)
 	{
 		children.erase(children.begin() + index);
 	}
+
+	void GameObject::AddAsset(Asset & a)
+	{
+		assets.push_back(&a);
+	}
+
+	void GameObject::RemoveAsset(Asset & a)
+	{
+		auto itr = assets.begin();
+
+		while (itr != assets.end()) {
+
+		}
+	}
+
+	void GameObject::RemoveAsset(int index)
+	{
+		assets.erase(assets.begin() + index);
+	}
+
 	bool GameObject::Init()
 	{
+		for (Asset* a : assets) {
+			if (!a->Init()) {
+				return false;
+			}
+		}
 		for (Component* c : components) {
-			if (c->Init()) {
+			if (!c->Init()) {
 				return false;
 			}
 		}
 		for (GameObject* g : children) {
-			if (g->Init()) {
+			if (!g->Init()) {
 				return false;
 			}
 		}
@@ -74,6 +100,9 @@ namespace Core {
 		for (GameObject* g : children) {
 			g->Update();
 		}
+		for (Asset* a : assets) {
+			a->Update();
+		}
 	}
 	void GameObject::Render()
 	{
@@ -82,6 +111,9 @@ namespace Core {
 		}
 		for (GameObject* g : children) {
 			g->Render();
+		}
+		for (Asset* a : assets) {
+			a->Render();
 		}
 	}
 	bool GameObject::Shutdown()
@@ -93,6 +125,11 @@ namespace Core {
 		}
 		for (GameObject* g : children) {
 			if (g->Shutdown()) {
+				return false;
+			}
+		}
+		for (Asset* a : assets) {
+			if (a->Shutdown()) {
 				return false;
 			}
 		}

@@ -196,15 +196,6 @@
     <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\SandBox\back.jpg" />
-    <Image Include="..\SandBox\bottom.jpg" />
-    <Image Include="..\SandBox\container.jpg" />
-    <Image Include="..\SandBox\front.jpg" />
-    <Image Include="..\SandBox\left.jpg" />
-    <Image Include="..\SandBox\right.jpg" />
-    <Image Include="..\SandBox\top.jpg" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
